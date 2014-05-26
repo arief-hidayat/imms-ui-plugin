@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 grails-app/assets
 
 override:
@@ -31,3 +32,7 @@ imms {
         ]
     }
 }
+=======
+imms-ui-plugin
+==============
+>>>>>>> e77339d51d3338453247ef4cca3563141bfe281e
