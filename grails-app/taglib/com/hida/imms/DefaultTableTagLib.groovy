@@ -11,7 +11,7 @@ class DefaultTableTagLib {
     def messageSource
     def table = { attrs, body ->
         String columns = buildHeaderColumns(attrs.key)
-        out << "<table id='${attrs.id}' class='display' cellspacing='0' width='${attrs.width ?: '100%'}'>"
+        out << "<table id='${attrs.id}' class='${attrs.class ?: 'table table-striped table-bordered'}' cellspacing='0' width='${attrs.width ?: '100%'}'>"
         out << "<thead>"
         out << columns
         out << "</thead>"

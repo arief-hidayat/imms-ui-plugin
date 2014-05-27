@@ -14,7 +14,7 @@
 //= require_self
 
 (function($, Backbone, App){
-    App.dataTableOptions = function(key) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
+    App.dataTableOptions = function($root, key) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
         var tableConf = App.dt.config.table[key];
         var customUrlConf = App.dt.config.customUrl[key];
 
@@ -31,9 +31,10 @@
 //                url: "/assets/localization/table/"+ App.options.language + ".json"
 //            },
             "rowCallback": function( row, data, displayIndex ) { // make row selectable
-                var selected = $('#example').data('selectedRows');
-                if ( $.inArray(data.DT_RowId, selected) !== -1 ) { //must have row_id
-                    $(row).addClass('selected');
+                var selected = $root.data(App.datakey.selectedRows);
+                var findIdx = $.inArray(""+data.DT_RowId, selected);
+                if ( findIdx !== -1 ) { //must have row_id
+                    $(row).addClass(App.css.selected);
                 }
             },
             "ajax": $.fn.dataTable.pipeline(pipelineOpt)
@@ -43,11 +44,11 @@
     };
 
     App.initTable = function($root, key) {
-        $root.data('selectedRows', []);
-        $root.dataTable( App.dataTableOptions(key));
+        $root.data(App.datakey.selectedRows, []);
+        $root.dataTable( App.dataTableOptions($root, key));
         $root.find('tbody').on('click', 'tr', function () {
             var id = this.id;
-            var selected = $root.data('selectedRows');
+            var selected = $root.data(App.datakey.selectedRows);
             var index = $.inArray(id, selected);
             if ( index === -1 ) {
                 selected.push( id );
@@ -55,8 +56,8 @@
                 selected.splice( index, 1 );
             }
 
-            $(this).toggleClass('selected');
-            $root.data('selectedRows', selected);
+            $(this).toggleClass(App.css.selected);
+            $root.data(App.datakey.selectedRows, selected);
         } );
     };
 

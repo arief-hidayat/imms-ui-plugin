@@ -1,10 +1,5 @@
-App = window.App || {};
-App.options = App.options || {
-    language : "en"
-};
-
-App.dt = App.dt || { };
-App.dt.config = App.dt.config || {};
+//= require core.settings
+//= require_self
 
 //App.dt.config.table = {
 ////    asset : {
