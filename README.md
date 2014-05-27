@@ -1,20 +1,9 @@
-<<<<<<< HEAD
 grails-app/assets
 
 override:
-javascripts/app/settings.js
+javascripts/app/settings.js.
 
-js:
-//= require jquery
-//= require imms.backbone.pack
-//= require imms.bootstrap.pack
-//= require imms.datatable.pack
-//= require_self
-
-css:
-*= require imms.bootstrap.pack
-*= require imms.datatable.pack
-*= require_self
+create view with imms.gsp layout. otherwise, you can create your own. use plugin example as reference.
 
 config:
 
@@ -32,7 +21,6 @@ imms {
         ]
     }
 }
-=======
-imms-ui-plugin
-==============
->>>>>>> e77339d51d3338453247ef4cca3563141bfe281e
+
+taglib:
+<dt:table id='asset-list' key='Asset'/>
