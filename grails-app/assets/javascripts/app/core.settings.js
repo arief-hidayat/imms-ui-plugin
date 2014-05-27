@@ -10,6 +10,8 @@ App.css = App.css || {
     selected : 'danger'
 };
 
+App.view = App.view || {};
+
 
 App.datakey = App.datakey || {
     selectedRows : 'selectedRows'

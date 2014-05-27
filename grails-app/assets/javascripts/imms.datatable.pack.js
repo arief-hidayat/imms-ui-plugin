@@ -14,7 +14,8 @@
 //= require_self
 
 (function($, Backbone, App){
-    App.dataTableOptions = function($root, key) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
+
+    App.dataTableOptions = function($root, key, enableRowCallback) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
         var tableConf = App.dt.config.table[key];
         var customUrlConf = App.dt.config.customUrl[key];
 
@@ -30,36 +31,75 @@
 //            language: {
 //                url: "/assets/localization/table/"+ App.options.language + ".json"
 //            },
-            "rowCallback": function( row, data, displayIndex ) { // make row selectable
-                var selected = $root.data(App.datakey.selectedRows);
-                var findIdx = $.inArray(""+data.DT_RowId, selected);
-                if ( findIdx !== -1 ) { //must have row_id
-                    $(row).addClass(App.css.selected);
-                }
-            },
             "ajax": $.fn.dataTable.pipeline(pipelineOpt)
         };
+        if(enableRowCallback) {
+            ret.rowCallback = function( row, data ) { // make row selectable
+                if ( $.inArray(""+data.DT_RowId, $root.data(App.datakey.selectedRows)) !== -1 ) { //must have row_id
+                    $(row).addClass(App.css.selected);
+                }
+            }
+        }
         if(tableConf.order != undefined) { ret.order = tableConf.order; }
         return ret;
     };
 
-    App.initTable = function($root, key) {
-        $root.data(App.datakey.selectedRows, []);
-        $root.dataTable( App.dataTableOptions($root, key));
-        $root.find('tbody').on('click', 'tr', function () {
-            var id = this.id;
-            var selected = $root.data(App.datakey.selectedRows);
+    // selectMode: 'multiple', 'single', 'none'
+    App.view.MultiSelectTable = Backbone.View.extend({ // new App.view.MultiSelectTable( el: '#asset-list', key: 'Asset')
+        key : null, // 'Asset'
+        getSelectedRows : function() { return this.$el.data(App.datakey.selectedRows) },
+        setSelectedRows : function(selected) {this.$el.data(App.datakey.selectedRows, selected); },
+
+        events: {
+            "click tbody tr": "clickRow"
+        },
+        initialize: function(opt) {
+            this.key = opt.key;
+            this.setSelectedRows([]);
+            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, true)); // true, enable row callback.
+        },
+        clickRow : function (ev) {
+            var row = ev.currentTarget;
+            var id = row.id;
+            var selected = this.getSelectedRows();
             var index = $.inArray(id, selected);
             if ( index === -1 ) {
                 selected.push( id );
             } else {
                 selected.splice( index, 1 );
             }
+            $(row).toggleClass(App.css.selected);
+            this.setSelectedRows(selected);
+        }
+    });
 
-            $(this).toggleClass(App.css.selected);
-            $root.data(App.datakey.selectedRows, selected);
-        } );
-    };
+    App.view.SingleSelectTable = Backbone.View.extend({ // new App.view.MultiSelectTable( el: '#asset-list', key: 'Asset')
+        key : null, // 'Asset'
+        getSelectedRows : function() { return this.$el.data(App.datakey.selectedRows) },
+        setSelectedRows : function(selected) {this.$el.data(App.datakey.selectedRows, selected); },
+
+        events: {
+            "click tbody tr": "clickRow"
+        },
+        initialize: function(opt) {
+            this.key = opt.key;
+            this.setSelectedRows([]);
+            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, true)); // true, enable row callback.
+        },
+        clickRow : function (ev) {
+            var row = ev.currentTarget;
+            var id = row.id;
+            var selected = this.getSelectedRows();
+            var index = $.inArray(id, selected);
+            if ( index === -1 ) {
+                selected.push( id );
+            } else {
+                selected.splice( index, 1 );
+            }
+            $(row).toggleClass(App.css.selected);
+            this.setSelectedRows(selected);
+        }
+    });
 
 
 })(jQuery, Backbone, App);
