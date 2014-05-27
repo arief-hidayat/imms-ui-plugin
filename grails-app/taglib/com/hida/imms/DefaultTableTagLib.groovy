@@ -10,15 +10,16 @@ class DefaultTableTagLib {
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
     def messageSource
     def table = { attrs, body ->
+        out << buildTable(attrs)
+    }
+
+
+    protected String buildTable(def attrs) {
+        StringBuilder sb = new StringBuilder()
         String columns = buildHeaderColumns(attrs.key)
-        out << "<table id='${attrs.id}' class='${attrs.class ?: 'table table-striped table-bordered'}' cellspacing='0' width='${attrs.width ?: '100%'}'>"
-        out << "<thead>"
-        out << columns
-        out << "</thead>"
-        out << "<tfoot>"
-        out << columns
-        out << "</tfoot>"
-        out << "</table>"
+        sb.append "<table id='${attrs.id}' class='${attrs.class ?: 'table table-striped table-bordered'}' cellspacing='0' width='${attrs.width ?: '100%'}'>"
+        sb.append("<thead>").append(columns).append("</thead>").append("<tfoot>").append(columns).append("</tfoot>").append("</table>")
+        sb.toString()
     }
 
     protected String buildHeaderColumns(String domainName) {
@@ -35,5 +36,27 @@ class DefaultTableTagLib {
     protected String getMessage(String domainName, String field) {
         messageSource.getMessage("${domainName}.${field}.label", null,
                 GrailsNameUtils.getNaturalName(field), LocaleContextHolder.locale)
+    }
+
+    protected String buildDropUpButtonGrp(def data) {
+//        <div class="btn-group dropup">
+//        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+//        <span class="glyphicon glyphicon-star"></span> Action <span class="caret"></span>
+//        </button>
+//  <ul class="dropdown-menu" role="menu">
+//    <li><a href="#">Action</a></li>
+//    <li><a href="#">Another action</a></li>
+//    <li><a href="#">Something else here</a></li>
+//    <li class="divider"></li>
+//        <li><a href="#">Separated link</a></li>
+//        </ul>
+//</div>
+
+
+//        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+//        <span class="glyphicon glyphicon-star"></span> Action <span class="caret"></span>
+//        </button>
+
+
     }
 }
