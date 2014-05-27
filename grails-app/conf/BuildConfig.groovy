@@ -40,9 +40,9 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime (":hibernate:3.6.10.15" ) { export = false }
-        runtime (":jquery:1.11.1") { export = false }
-        compile (":asset-pipeline:1.8.7") { export = false }
+//        runtime (":hibernate4:4.3.5.3") { export = false }
+        runtime (":jquery:1.11.1")
+        compile (":asset-pipeline:1.8.7")
 
         build(":release:3.0.1",
               ":rest-client-builder:1.0.3") {

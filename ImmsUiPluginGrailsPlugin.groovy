@@ -15,7 +15,6 @@ class ImmsUiPluginGrailsPlugin {
     def description = '''\
 Combining Grails Asset Pipeline with jQuery, Backbone, dataTable, Bootstrap, and many more.
 '''
-    def dependsOn = [ 'asset-pipeline': "1.8 > *", 'jquery' : '1.9 > *']
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/imms-ui-plugin"
 

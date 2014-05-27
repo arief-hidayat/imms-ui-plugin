@@ -14,31 +14,6 @@
     <link rel="apple-touch-icon" href="${assetPath(src: 'apple-touch-icon.png')}">
     <link rel="apple-touch-icon" sizes="114x114" href="${assetPath(src: 'apple-touch-icon-retina.png')}">
     <asset:stylesheet src="application.css"/>
-    <script type="text/javascript">
-        App = window.App || {};
-        App.options = App.options || {
-            language : "en"
-        };
-        App.dt = App.dt || { };
-        App.dt.config = App.dt.config || {};
-        App.dt.config.table = {
-            <% Holders.config.imms?.datatable?.domainfields?.each { domainName, fields ->  %> <%= domainName %>: {
-            columns : [ <%= fields.collect { "{\"data\": \"$it\"}" }.flatten() %>]
-        }
-            <% }%>
-//    asset : {
-//        columns : [ { "data": "code" }, { "data": "name" }, { "data": "assetType" }, { "data": "status" }, { "data": "locationCd" }],
-//        order : [[1, 'asc']]
-//    }
-        };
-
-        App.dt.config.customUrl = {
-//        asset : {
-//            url : "only for custom",
-//            extraParams : function(request) { }
-//        }
-        };
-    </script>
     <asset:javascript src="application.js"/>
     <g:layoutHead/>
 </head>

@@ -18,7 +18,7 @@ class DataTableService {
     @Transactional(readOnly = true)
     DataTableResponse list(String key, DataTableRequest req) { // for simplicity, key is domainName
         println "list dataTable -> ${req.draw} ${req.start} ${req.length}. search : ${req.search}"
-        if(Holders.pluginManager.hasGrailsPlugin('searchable')) {
+        if(req.search.value && Holders.pluginManager.hasGrailsPlugin('searchable')) {
             return listBySearchablePlugin(key, req)
         } else {
             // hibernate-search plugin?
@@ -38,8 +38,9 @@ class DataTableService {
                     else wildcard(col.data, col.search.value)
                 }
             }
-            for(DtReqOrder ord : req.orders)
-                sort(req.columns.get(ord.column).data, ord.dir)
+            // sorting not working
+//            for(DtReqOrder ord : req.orders)
+//                addSort(req.columns.get(ord.column).data)
         }, searchOptions)
         resp.recordsFiltered = searchResults.total
         resp.withData(searchResults.results)
