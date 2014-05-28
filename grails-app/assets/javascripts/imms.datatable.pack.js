@@ -19,7 +19,7 @@
         var tableConf = App.dt.config.table[key];
         var customUrlConf = App.dt.config.customUrl[key];
 
-        var pipelineOpt = { url : "dataTable/" + key};
+        var pipelineOpt = { url : App.url + "/dataTable/" + key};
         if(customUrlConf != undefined) {
             if(customUrlConf.url != undefined) pipelineOpt.url = customUrlConf.url;
             if(customUrlConf.data != undefined) pipelineOpt.data = customUrlConf.data;
@@ -45,7 +45,7 @@
     };
 
     // selectMode: 'multiple', 'single', 'none'
-    App.view.MultiSelectTable = App.View.extend({ // new App.view.MultiSelectTable( el: '#asset-list', key: 'Asset')
+    App.view.Table = App.View.extend({ // new App.view.Table( el: '#asset-list', key: 'Asset')
 //        key : null, // 'Asset'
         selectionMode : null,
         getSelectedRows : function() { return this.$el.data(App.datakey.selectedRows) },
@@ -98,7 +98,7 @@
             "click .buttons .btn": "clickButton"
         },
         initialize: function() {
-            this.tableView = new App.view.MultiSelectTable({el: this.$(".table"), key: this.key, pubSub : this.pubSub});
+            this.tableView = new App.view.Table({el: this.$(".table"), key: this.key, pubSub : this.pubSub});
         },
         clickButton : function(ev) {
             var $btn = $(ev.currentTarget);

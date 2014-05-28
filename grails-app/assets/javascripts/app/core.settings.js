@@ -6,6 +6,8 @@ App.options = App.options || {
 App.dt = App.dt || { };
 App.dt.config = App.dt.config || {};
 
+App.url = "http://localhost:8080/IMMS";
+
 App.css = App.css || {
     selected : 'danger'
 };
