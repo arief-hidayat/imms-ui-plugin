@@ -83,7 +83,7 @@
         },
         initialize: function(opt) {
             this.key = opt.key;
-            this.setSelectedRows([]);
+            this.setSelectedRows(null);
             this.$el.dataTable( App.dataTableOptions(this.$el, this.key, true)); // true, enable row callback.
         },
         clickRow : function (ev) {
