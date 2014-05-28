@@ -45,61 +45,81 @@
     };
 
     // selectMode: 'multiple', 'single', 'none'
-    App.view.MultiSelectTable = Backbone.View.extend({ // new App.view.MultiSelectTable( el: '#asset-list', key: 'Asset')
-        key : null, // 'Asset'
+    App.view.MultiSelectTable = App.View.extend({ // new App.view.MultiSelectTable( el: '#asset-list', key: 'Asset')
+//        key : null, // 'Asset'
+        selectionMode : null,
         getSelectedRows : function() { return this.$el.data(App.datakey.selectedRows) },
         setSelectedRows : function(selected) {this.$el.data(App.datakey.selectedRows, selected); },
-
+        canSelectMultipleRows : function() { return this.selectionMode == "multi"},
+        canSelectRow : function() { return this.selectionMode != null},
         events: {
             "click tbody tr": "clickRow"
         },
         initialize: function(opt) {
-            this.key = opt.key;
+            this.selectionMode = opt.selectionMode || "single";
             this.setSelectedRows([]);
-            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, true)); // true, enable row callback.
+            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow())); // true, enable row callback.
+            this.subscribeEvt("row:select", function(data){
+                App.logDebug("select key " + data.key + ", id " + data.rowId);
+            });
+            this.subscribeEvt("row:deselect", function(data){
+                App.logDebug("deselect key " + data.key + ", id " + data.rowId);
+            });
         },
         clickRow : function (ev) {
+            if(!this.canSelectRow()) return;
+
             var row = ev.currentTarget;
             var id = row.id;
             var selected = this.getSelectedRows();
             var index = $.inArray(id, selected);
             if ( index === -1 ) {
-                selected.push( id );
+                if(this.canSelectMultipleRows()) {
+                    selected.push( id );
+                } else {
+                    selected = [id];
+                    $(row).siblings().removeClass(App.css.selected); // remove other selected item;
+                }
+                this.publishEvt("row:select",{ rowId : id });
             } else {
                 selected.splice( index, 1 );
+                this.publishEvt("row:deselect",{ rowId : id });
             }
             $(row).toggleClass(App.css.selected);
             this.setSelectedRows(selected);
         }
     });
 
-    App.view.SingleSelectTable = Backbone.View.extend({ // new App.view.MultiSelectTable( el: '#asset-list', key: 'Asset')
-        key : null, // 'Asset'
-        getSelectedRows : function() { return this.$el.data(App.datakey.selectedRows) },
-        setSelectedRows : function(selected) {this.$el.data(App.datakey.selectedRows, selected); },
 
+    App.view.TableRegion = App.View.extend({
+        // new App.view.TableRegion( el: '#asset-list', key: 'Asset' )
+        tableView : null,
         events: {
-            "click tbody tr": "clickRow"
+            "click .buttons .btn": "clickButton"
         },
-        initialize: function(opt) {
-            this.key = opt.key;
-            this.setSelectedRows(null);
-            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, true)); // true, enable row callback.
+        initialize: function() {
+            this.tableView = new App.view.MultiSelectTable({el: this.$(".table"), key: this.key, pubSub : this.pubSub});
         },
-        clickRow : function (ev) {
-            var row = ev.currentTarget;
-            var id = row.id;
-            var selected = this.getSelectedRows();
-            var index = $.inArray(id, selected);
-            if ( index === -1 ) {
-                selected.push( id );
-            } else {
-                selected.splice( index, 1 );
+        clickButton : function(ev) {
+            var $btn = $(ev.currentTarget);
+            var callback = $btn.data("callback");
+            var selectedRows = this.tableView.getSelectedRows();
+            if(callback != undefined && this[callback] != undefined) {
+                this[callback].call(this, selectedRows);
+                this.publishEvt("action:" + callback, {selectedRows : selectedRows});
             }
-            $(row).toggleClass(App.css.selected);
-            this.setSelectedRows(selected);
+        },
+        create : function(selectedRow) {
+            App.logDebug("create... selectedRow:" + selectedRow);
+        },
+        show : function(selectedRow) {
+            App.logDebug("show... selectedRow:" + selectedRow);
+        },
+        delete : function(selectedRow) {
+            App.logDebug("delete... selectedRow:" + selectedRow);
         }
     });
+
 
 
 })(jQuery, Backbone, App);

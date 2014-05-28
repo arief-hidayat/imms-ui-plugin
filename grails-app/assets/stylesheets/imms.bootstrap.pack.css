@@ -13,3 +13,7 @@ td.details-control {
 tr.details td.details-control {
     background: url('../images/details_close.png') no-repeat center center;
 }
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}

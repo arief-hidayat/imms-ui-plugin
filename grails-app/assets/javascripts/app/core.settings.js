@@ -16,3 +16,6 @@ App.view = App.view || {};
 App.datakey = App.datakey || {
     selectedRows : 'selectedRows'
 };
+
+App.logDebug = function(msg) { window.console&&console.log(msg);};
+App.logErr = function(msg) { window.console&&console.error(msg);};
