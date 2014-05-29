@@ -40,12 +40,6 @@ class DefaultButtonTagLib {
         out << buildSingleButton([id : attrs.id, cssClass : attrs.cssClass ?: 'btn-default', icon : attrs.icon ?: 'save', value : attrs.value ?: 'update' , callback : attrs.callback ?: 'update'])
     }
 
-    def buttonGrp = { attrs, body ->
-        // <bt:buttonGrp id="my-id" cssClass="btn-default" icon="star">create</bt:buttonGrp> --> action.create.label
-        out << buildSingleButton(attrs)
-    }
-
-
     protected String buildSingleButton(def btn) {
 //        <button type="button" class="btn btn-default" id='my-id' data-callback="create">
 //            <span class="glyphicon glyphicon-star"></span> Star
@@ -63,20 +57,4 @@ class DefaultButtonTagLib {
         sb.toString()
     }
 
-    //TODO:
-    protected String buildButtonGrp(def btn) {
-//        <button type="button" class="btn btn-default" id='my-id'>
-//            <span class="glyphicon glyphicon-star"></span> Star
-//    </button>
-        StringBuilder sb = new StringBuilder()
-        sb.append("<button type='button' class='btn")
-        if(btn.cssClass) sb.append(" ").append(btn.cssClass)
-        sb.append("' ")
-        if(btn.id) sb.append("id='").append(btn.id).append("'")
-        sb.append(">")
-        if(btn.icon) sb.append("<span class='glyphicon glyphicon-").append(btn.icon).append("'></span> ")
-        sb.append(getMessage(btn.value))
-        sb.append("</button>")
-        sb.toString()
-    }
 }

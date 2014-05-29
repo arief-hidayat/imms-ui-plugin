@@ -1,0 +1,93 @@
+// bootstrap 3.1.1
+// + datetimepicker 3.0.0 https://github.com/Eonasdan/bootstrap-datetimepicker http://eonasdan.github.io/bootstrap-datetimepicker
+// + typeahead https://github.com/bassjobsen/Bootstrap-3-Typeahead
+//
+//
+//= require moment.min
+//= require imms.backbone.pack
+//= require imms.bootstrap.pack
+//= require_self
+
+(function($, Backbone, _, moment, App){
+    App.view.DatePicker = App.View.extend({
+        type : null, field : null,
+        events : {
+            "dp.change" : "onChangeDatePicker"
+        },
+        initialize: function(opt) {
+            this.type = this.$el.data("type");
+            this.field = this.$el.data("field");
+            this.$day = this.$("#"+this.field + "_day");
+            this.$month = this.$("#"+this.field + "_month");
+            this.$year = this.$("#"+this.field + "_year");
+            this.$hour = this.$("#"+this.field + "_hour");
+            this.$minute = this.$("#"+this.field + "_minute");
+
+            // setup date picker
+            var timePickerOpts = { pickDate: true };
+            if(this.isTimePicker()) timePickerOpts.pickDate = false;
+            this.$el.data("date-format", this.getDateFormat());
+            this.picker = this.$el.datetimepicker(timePickerOpts);
+            // TODO: set date, if any
+//            var initialValue = this.$("#" + this.field).val();
+//            if(initialValue != undefined && initialValue != "")
+//                this.picker.setDate(moment(initialValue, this.getDateFormat()));
+
+            this.minBoundaries = this.$el.data("after") || [];
+            this.maxBoundaries = this.$el.data("before") || [];
+
+            // listen to min/max boundaries
+            _.each(this.minBoundaries, function(element){
+                if(element == this.field) return;
+                this.subscribeEvt("dp.change:" + element, function(e) {
+                    var date = e.date;
+                    if(date == undefined || date == null) return;
+                    var currMinDate = this.picker.options.minDate; // a moment
+                    if( currMinDate == undefined || currMinDate == null || currMinDate.isAfter(date)) {
+                        this.picker.data("DateTimePicker").setMinDate(date);
+                    }
+                });
+            }, this);
+            _.each(this.maxBoundaries, function(element){
+                if(element == this.field) return;
+                this.subscribeEvt("dp.change:" + element, function(e) {
+                    var date = e.date;
+                    if(date == undefined || date == null) return;
+                    var currMaxDate = this.picker.options.maxDate; // a moment
+                    if( currMaxDate == undefined || currMaxDate == null || currMaxDate.isBefore(date)) {
+                        this.picker.data("DateTimePicker").setMaxDate(date);
+                    }
+                });
+            }, this);
+        },
+        onChangeDatePicker : function(e) {
+            App.logDebug("onChangeDatePicker " + this.field);
+            this.setDateValue(e.date);
+            this.publishEvt("dp.change:" + this.field, e);
+        },
+        getDateValue : function() { return new Date(this.year(), this.month(), this.day(), this.hour(), this.minute(), 0)},
+        setDateValue : function(date) {
+            App.logDebug("setDateValue: " + date);
+            var theDate = _.isDate(date) ? moment(date) :
+                moment(date, this.getDateFormat());
+            App.logDebug("theDate year: " + theDate.year());
+            this.setValue(this.$year, theDate.year());
+            App.logDebug("$year : " + this.$year.val());
+            this.setValue(this.$month, theDate.month());
+            this.setValue(this.$day, theDate.date());
+            this.setValue(this.$hour, theDate.hour());
+            this.setValue(this.$minute, theDate.minute());
+        },
+        getDateFormat : function () { return this.isDatePicker() ? App.format.LocalDate : App.format.LocalDateTime },
+        isTimePicker : function() { return this.type == "timePicker" },
+        isDatePicker : function() { return this.type == "datePicker" },
+        day : function() { return this.valueOf(this.$day) },
+        month : function() { return this.valueOf(this.$month) },
+        year : function() { return this.valueOf(this.$year) },
+        hour : function() { return this.valueOf(this.$hour) },
+        minute : function() { return this.valueOf(this.$minute) },
+        valueOf : function( $val ) {  return ($val == undefined || $val.val() == undefined) ? 0 : parseInt($val.val()); },
+        setValue : function($val, value) { if($val != undefined) { $val.val(value); } }
+    });
+})(jQuery, Backbone, _, window.moment, App);
+

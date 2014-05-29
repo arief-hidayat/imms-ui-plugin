@@ -6,9 +6,8 @@
 // to create separate JavaScript files as needed.
 //
 //= require jquery
-//= require imms.backbone.pack
-//= require imms.bootstrap.pack
 //= require imms.datatable.pack
+//= require imms.form.pack
 //= require_self
 
 if (typeof jQuery !== 'undefined') {
