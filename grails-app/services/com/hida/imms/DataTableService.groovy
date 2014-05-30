@@ -37,10 +37,10 @@ class DataTableService {
                     if(!col.search.regex) term(col.data, col.search.value) //TODO: this works only for String value.
                     else wildcard(col.data, col.search.value)
                 }
-            }
-            // sorting not working
-//            for(DtReqOrder ord : req.orders)
-//                addSort(req.columns.get(ord.column).data)
+                    }
+                    // sorting not working
+        //            for(DtReqOrder ord : req.orders)
+        //                addSort(req.columns.get(ord.column).data)
         }, searchOptions)
         resp.recordsFiltered = searchResults.total
         resp.withData(searchResults.results)
