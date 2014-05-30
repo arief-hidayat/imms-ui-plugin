@@ -22,13 +22,16 @@ class BsDatePickerTagLib {
     }
 
 //    <div class="form-group">
+
 //        <div class='input-group date' data-type="datePicker" date-after='["requestDate"]' data-field='field' data-before='["plannedEndDate","actualEndDate"]'>
 //        <input type='text' id='field' class="form-control has-error" />
-//        <input type='hidden' id='field_day' name='field_day'/>
-//        <input type='hidden' id='field_month' name='field_month'/>
-//        <input type='hidden' id='field_year' name='field_year'/>
 //        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 //        </div>
+//            <div id="field-value">
+        //        <input type='hidden' id='field_day' name='field_day'/>
+        //        <input type='hidden' id='field_month' name='field_month'/>
+        //        <input type='hidden' id='field_year' name='field_year'/>
+        //    </div>
 //    </div>
     // <bs:datePicker field="plannedStartDate" shouldBeAfter="requestDate" shouldBeBefore="plannedEndDate,actualEndDate" default="${LocalDate.now()}" value="${assetInstance?.plannedStartDate}"/>
     def datePicker = {attrs ->
@@ -94,45 +97,49 @@ class BsDatePickerTagLib {
         if(attrs.id) sb.append "id='${attrs.id}' "
         sb.append(">").append("<input type='text' ").append("id='").append(attrs.field).append("' class='form-control")
         sb.append("'/>")
+        String icon = type.equals("timePicker") ? "time" : "calendar"
+        sb.append("<span class='input-group-addon'><span class='glyphicon glyphicon-${icon}'></span></span>")
+                .append("</div>")
 
+        sb.append("<div id='").append("${attrs.field}-value'").append("'>")
         if (fields.contains(DateTimeFieldType.dayOfMonth())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}_day'").append(" name='").append("${attrs.field}_day'")
+            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-day'").append(" name='").append("${attrs.field}_day'")
             if(attrs.value) sb.append(" value='").append(value?.dayOfMonth).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.monthOfYear())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}_month'").append(" name='").append("${attrs.field}_month'")
+            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-month'").append(" name='").append("${attrs.field}_month'")
             if(attrs.value) sb.append(" value='").append(value?.monthOfYear).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.year())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}_year'").append(" name='").append("${attrs.field}_year'")
+            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-year'").append(" name='").append("${attrs.field}_year'")
             if(attrs.value) sb.append(" value='").append(value?.year).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.hourOfDay())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}_hour'").append(" name='").append("${attrs.field}_hour'")
+            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-hour'").append(" name='").append("${attrs.field}_hour'")
             if(attrs.value) sb.append(" value='").append(value?.hourOfDay).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.minuteOfHour())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}_minute'").append(" name='").append("${attrs.field}_minute'")
+            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-minute'").append(" name='").append("${attrs.field}_minute'")
             if(attrs.value) sb.append(" value='").append(value?.minuteOfHour).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.secondOfMinute())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}_second'").append(" name='").append("${attrs.field}_second'")
+            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-second'").append(" name='").append("${attrs.field}_second'")
             if(attrs.value) sb.append(" value='").append(value?.secondOfMinute).append("'")
             sb.append("/>")
         }
-        String icon = type.equals("timePicker") ? "time" : "calendar"
-        sb.append("<span class='input-group-addon'><span class='glyphicon glyphicon-${icon}'></span></span>")
-                .append("</div>").append("</div>")
+        sb.append("</div>")
+
+        sb.append("</div>")
         sb.toString()
     }
 

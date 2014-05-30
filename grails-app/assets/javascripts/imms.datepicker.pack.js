@@ -17,11 +17,11 @@
         initialize: function(opt) {
             this.type = this.$el.data("type");
             this.field = this.$el.data("field");
-            this.$day = this.$("#"+this.field + "_day");
-            this.$month = this.$("#"+this.field + "_month");
-            this.$year = this.$("#"+this.field + "_year");
-            this.$hour = this.$("#"+this.field + "_hour");
-            this.$minute = this.$("#"+this.field + "_minute");
+            this.$day = this.$el.parent().find("#"+this.field + "-day");
+            this.$month = this.$el.parent().find("#"+this.field + "-month");
+            this.$year = this.$el.parent().find("#"+this.field + "-year");
+            this.$hour = this.$el.parent().find("#"+this.field + "-hour");
+            this.$minute = this.$el.parent().find("#"+this.field + "-minute");
 
             // setup date picker
             var timePickerOpts = { pickDate: true };
@@ -68,15 +68,15 @@
         getDateValue : function() { return new Date(this.year(), this.month(), this.day(), this.hour(), this.minute(), 0)},
         setDateValue : function(date) {
             App.logDebug("setDateValue: " + date);
-            var theDate = _.isDate(date) ? moment(date) :
-                moment(date, this.getDateFormat());
-            App.logDebug("theDate year: " + theDate.year());
-            this.setValue(this.$year, theDate.year());
+//            var theDate = _.isDate(date) ? moment(date) :
+//                moment(date, this.getDateFormat());
+            App.logDebug("theDate year: " + date.year());
+            this.setValue(this.$year, date.year());
             App.logDebug("$year : " + this.$year.val());
-            this.setValue(this.$month, theDate.month());
-            this.setValue(this.$day, theDate.date());
-            this.setValue(this.$hour, theDate.hour());
-            this.setValue(this.$minute, theDate.minute());
+            this.setValue(this.$month, date.month());
+            this.setValue(this.$day, date.date());
+            this.setValue(this.$hour, date.hour());
+            this.setValue(this.$minute, date.minute());
         },
         getDateFormat : function () { return this.isDatePicker() ? App.format.LocalDate : App.format.LocalDateTime },
         isTimePicker : function() { return this.type == "timePicker" },

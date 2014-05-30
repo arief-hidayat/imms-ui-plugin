@@ -7,7 +7,7 @@
 //= require jquery
 //= require moment.min
 //= require bootstrap.min
-//= require bootstrap-datetimepicker
+//= require bootstrap-datetimepicker.min
 //= require bootstrap3-typeahead
 //= require_self
 
