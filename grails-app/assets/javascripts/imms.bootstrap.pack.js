@@ -8,6 +8,7 @@
 //= require moment.min
 //= require bootstrap.min
 //= require bootstrap-datetimepicker.min
+//= require bloodhound
 //= require bootstrap3-typeahead
 //= require_self
 

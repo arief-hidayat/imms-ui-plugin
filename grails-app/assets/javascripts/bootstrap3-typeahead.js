@@ -58,7 +58,7 @@
           .change();
       }
       return this.hide();
-    }
+  }
 
   , updater: function (item) {
       return item;
