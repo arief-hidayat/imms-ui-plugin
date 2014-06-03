@@ -51,6 +51,12 @@
                 remoteUrl : this.$el.data("source-url") || App.url + "/typeAhead/" + this.key,
                 remoteDefaultOpts : { max : 50}
             });
+        },
+        remove: function() {
+            if(this.$el.data('typeahead')) {
+                this.$el.data('typeahead').destroy();
+            }
+            return Backbone.View.prototype.remove.apply(this, arguments);
         }
     });
 
@@ -63,6 +69,7 @@
 
         remove: function() {
             _.each(this.datePickers, function() { this.remove()});
+            _.each(this.typeAheadFields, function() { this.remove()});
             return Backbone.View.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
