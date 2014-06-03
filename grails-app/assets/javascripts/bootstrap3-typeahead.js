@@ -44,6 +44,27 @@
     this.shown = false;
     this.listen();
     this.showHintOnFocus = typeof this.options.showHintOnFocus == 'boolean' ? this.options.showHintOnFocus : false;
+
+      this.isObjectItem = this.options.isObjectItem;
+      if(this.isObjectItem) {
+          this.displayKey = this.options.displayKey || "value";
+      }
+      this.remoteUrl = this.options.remoteUrl;
+      if(this.remoteUrl) {
+          this.remoteDefaultOpts = this.options.remoteDefaultOpts || {};
+          this.remoteDataType = this.options.remoteDataType || "json";
+          this.source = function (query, process) {
+              return $.ajax({
+                  url: this.remoteUrl,
+                  type: 'post',
+                  data: $.extend(this.remoteDefaultOpts, { query: query }),
+                  dataType: this.remoteDataType,
+                  success: function (result) {
+                      return process(result);
+                  }
+              });
+          }
+      }
   };
 
   Typeahead.prototype = {
@@ -55,13 +76,16 @@
       if(this.autoSelect || val) {
         this.$element
           .val(this.updater(val))
+          .data("selected-value", val) // add
           .change();
       }
       return this.hide();
+  },
+  getDisplayText : function(item) {
+      return this.isObjectItem ? item[this.displayKey] : item;
   }
-
   , updater: function (item) {
-      return item;
+      return this.getDisplayText(item);
     }
 
   , setSource: function (source) {
@@ -112,9 +136,9 @@
         if (items) {
           this.process(items);
         }
-      }, this)
+      }, this);
 
-      clearTimeout(this.lookupWorker)
+      clearTimeout(this.lookupWorker);
       this.lookupWorker = setTimeout(worker, this.delay)
     }
 
@@ -139,7 +163,7 @@
     }
 
   , matcher: function (item) {
-      return ~item.toLowerCase().indexOf(this.query.toLowerCase());
+      return ~this.getDisplayText(item).toLowerCase().indexOf(this.query.toLowerCase());
     }
 
   , sorter: function (items) {
@@ -149,8 +173,9 @@
         , item;
 
       while ((item = items.shift())) {
-        if (!item.toLowerCase().indexOf(this.query.toLowerCase())) beginswith.push(item);
-        else if (~item.indexOf(this.query)) caseSensitive.push(item);
+          var display = this.getDisplayText(item);
+        if (!display.toLowerCase().indexOf(this.query.toLowerCase())) beginswith.push(item);
+        else if (~display.indexOf(this.query)) caseSensitive.push(item);
         else caseInsensitive.push(item);
       }
 
@@ -159,7 +184,7 @@
 
   , highlighter: function (item) {
       var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-      return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+      return this.getDisplayText(item).replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
         return '<strong>' + match + '</strong>';
       });
     }
@@ -371,6 +396,7 @@
   , minLength: 1
   , scrollHeight: 0
   , autoSelect: true
+      , isObjectItem : false
   };
 
   $.fn.typeahead.Constructor = Typeahead;
