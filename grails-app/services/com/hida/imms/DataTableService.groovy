@@ -17,7 +17,7 @@ class DataTableService {
 
     @Transactional(readOnly = true)
     DataTableResponse list(String key, DataTableRequest req) { // for simplicity, key is domainName
-        println "list dataTable -> ${req.draw} ${req.start} ${req.length}. search : ${req.search}"
+//        println "list dataTable -> ${req.draw} ${req.start} ${req.length}. search : ${req.search}"
         if(req.search.value && Holders.pluginManager.hasGrailsPlugin('searchable')) {
             return listBySearchablePlugin(key, req)
         } else {

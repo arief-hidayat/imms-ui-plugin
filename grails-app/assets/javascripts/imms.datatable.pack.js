@@ -72,6 +72,10 @@
             this.subscribeEvt("row:deselect", function(data){
                 App.logDebug("deselect key " + data.key + ", id " + data.rowId);
             });
+
+            this.subscribeEvt("item:deleted", this.deleteRow);
+            this.subscribeEvt("item:added", this.addRow);
+            // assumed this is triggered by form view after call backend to delete item.
         },
         clickRow : function (ev) {
             if(!this.canSelectRow()) return;
@@ -102,6 +106,19 @@
         indexOfSelectedId : function(id) {
             var selected = this.getSelectedRows();
             return $.inArray(id, selected);
+        },
+        deleteRow : function(data) {
+            var table = this.$el.DataTable();
+            var selector = "#"+data.id;
+            App.logDebug("delete Row . selector = " + selector);
+            table.row(selector).remove().draw(false);
+            var index = this.indexOfSelectedId(data.id);
+            if(index !== -1) {
+                this.getSelectedRows().splice( index, 1 );
+            }
+        },
+        addRow : function(rowData) { // array of value
+            this.$el.DataTable().row.add(rowData).draw();
         }
     });
 

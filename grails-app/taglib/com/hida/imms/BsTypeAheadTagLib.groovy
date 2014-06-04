@@ -36,7 +36,6 @@ class BsTypeAheadTagLib {
         String parentInstance = attrs.parentInstance, domain = attrs.domain, displayKey = displayKeyConf[domain],
                 field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}", id = attrs.id ?: "${parentInstance}-${field}"
 
-        println "displayKey ${displayKey}, config. ${displayKeyConf}"
         def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: [:]
         def fields = attrs.fields ?: [:]
         if(!populatedFieldsConf.containsKey(field) && displayKey) {

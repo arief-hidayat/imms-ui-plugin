@@ -111,7 +111,7 @@
             var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
             this.urlCreateForm = opt.urlCreateForm || (App.url + "/" + urlController + "/createForm/");
             this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
-            this.urlDeleteJSON = opt.urlDeleteJSON; (App.url + "/" + urlController + "/delete/");
+            this.urlDeleteJSON = opt.urlDeleteJSON || (App.url + "/" + urlController + "/deleteJSON/");
             this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
             this.setupTab();
             this.customActions = opt.customActions || this.customActions || { }; // other than show, create, delete
@@ -143,12 +143,14 @@
             }
         },
         deleteForm : function(data) { // {selectedRows : selectedRows}
-            App.logDebug("deleteForm..." + url);
+            App.logDebug("deleteForm...");
             _.each(data.selectedRows, function(id) {
                 this.postJSON(this.urlDeleteJSON,
-                    {id : id , _method: "DELETE", _action_delete : "Delete" },
+                    {id : id },
                     function(data){
-                        App.logDebug("deleted " + data);
+//                        window.console && console.log("deleted. " + data.message);
+                        App.logDebug("deleted " + data.message);
+                        this.publishEvt("item:deleted", data.params); //TODO: onCreate... publish item:created
                     }
                 );
             }, this);
@@ -168,7 +170,7 @@
                 url: url,
                 data: option,
                 success: callback,
-                dataType: "JSON",
+                dataType: "json",
                 context : this // make sure this BB view is the context
             });
         },

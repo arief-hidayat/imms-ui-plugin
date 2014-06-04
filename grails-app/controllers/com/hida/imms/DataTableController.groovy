@@ -9,7 +9,6 @@ class DataTableController {
 
     def list(String domainName) {
         DataTableRequest req = new DataTableRequest(params)
-//        println "inside dataTable/asset -> ${req.draw} ${req.start} ${req.length}. search : ${req.search}"
         render dataTableService.list(domainName, req) as JSON
     }
 }
