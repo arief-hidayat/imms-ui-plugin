@@ -53,7 +53,7 @@
             if(this.$el.data('typeahead')) {
                 this.$el.data('typeahead').destroy();
             }
-            return Backbone.View.prototype.remove.apply(this, arguments);
+            return App.View.prototype.remove.apply(this, arguments);
         }
     });
 
@@ -65,9 +65,11 @@
         },
 
         remove: function() {
-            _.each(this.datePickers, function() { this.remove()});
-            _.each(this.typeAheadFields, function() { this.remove()});
-            return Backbone.View.prototype.remove.apply(this, arguments);
+            _.each(this.datePickers, function(view) {
+                view.remove()
+            });
+            _.each(this.typeAheadFields, function(view) { view.remove()});
+            return App.View.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
             _.each(this.$(".date"), function(elem){
@@ -103,11 +105,11 @@
                 this.form.remove();
                 this.form = undefined;
             }
-            return Backbone.View.prototype.remove.apply(this, arguments);
+            return App.View.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
             var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
-            this.urlCreateForm = opt.urlCreateForm || (App.url + "/" + urlController + "/editableForm/");
+            this.urlCreateForm = opt.urlCreateForm || (App.url + "/" + urlController + "/createForm/");
             this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
             this.urlDeleteJSON = opt.urlDeleteJSON; (App.url + "/" + urlController + "/delete/");
             this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
@@ -125,15 +127,16 @@
         loadForm : function(url, idx) {
             if(idx == undefined) idx = 1; // 2nd tab is for form.
             return function(eventData) {
-                App.logDebug("loadForm..." + url);
-                var $formContainer = this.formEl.parent();
+                App.logDebug("enter loadForm from url" + url);
+                var $formContainer = $(this.formEl);
                 var opt = {};
                 if(eventData.selectedRows.length > 0) {
                     opt.id = eventData.selectedRows[0]
                 }
-                this.getHtml(url,opt, function( data ) {
-                    $formContainer.append(data); // note that 'append' only work for two tabs.
+                this.getHtml(url, opt, function( data ) {
+                    App.logDebug("loadForm to ..." + $formContainer.attr('id'));
                     if(this.form != null) { this.form.remove(); this.form = undefined; }
+                    $formContainer.html(data); // note that 'append' only work for two tabs.
                     this.buildForm();
                     this.showTab(idx);
                 });
@@ -142,19 +145,32 @@
         deleteForm : function(data) { // {selectedRows : selectedRows}
             App.logDebug("deleteForm..." + url);
             _.each(data.selectedRows, function(id) {
-                $.ajax({
-                    type: "POST",
-                    url: this.urlDeleteJSON,
-                    data: {id : id , _method: "DELETE", _action_delete : "Delete" }, // not sure if we need those data.
-                    success: function(data){
+                this.postJSON(this.urlDeleteJSON,
+                    {id : id , _method: "DELETE", _action_delete : "Delete" },
+                    function(data){
                         App.logDebug("deleted " + data);
-                    },
-                    dataType: "JSON"
-                });
+                    }
+                );
             }, this);
         },
-        getHtml : function(url, callback) {
-           return $.get(url, callback); // we expect to set the context to this BB view object
+        getHtml : function(url, option, callback) {
+            return $.ajax({
+                type: "GET",
+                url: url,
+                data: option,
+                success: callback,
+                context : this // make sure this BB view is the context
+            });
+        },
+        postJSON : function(url, option, callback) {
+            return $.ajax({
+                type: "POST",
+                url: url,
+                data: option,
+                success: callback,
+                dataType: "JSON",
+                context : this // make sure this BB view is the context
+            });
         },
         setupTab : function() {
             var $tableLi = this.$(".nav-tabs li:eq(0)"),

@@ -20,6 +20,11 @@ var pubSub = _.extend({},Backbone.Events); //http://blog.safaribooksonline.com/2
         },
         subscribeEvt : function(code, callback) {
             this.listenTo(this.pubSub, code, callback ,this);
+        },
+        remove: function() {
+//            this.$el.remove(); // this View is not removing the $el.
+            this.stopListening();
+            return this;
         }
     });
 })(Backbone, _, App);
