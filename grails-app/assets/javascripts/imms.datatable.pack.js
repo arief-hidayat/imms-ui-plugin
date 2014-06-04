@@ -48,6 +48,7 @@
     App.view.Table = App.View.extend({ // new App.view.Table( el: '#asset-list', key: 'Asset')
 //        key : null, // 'Asset'
         selectionMode : null,
+        pk: "id",
         getSelectedRows : function() { return this.$el.data(App.datakey.selectedRows) },
         setSelectedRows : function(selected) {this.$el.data(App.datakey.selectedRows, selected); },
         canSelectMultipleRows : function() { return this.selectionMode == "multi"},
@@ -57,6 +58,12 @@
         },
         initialize: function(opt) {
             this.selectionMode = opt.selectionMode || "single";
+            this.getRowId = opt.getRowId || this.getRowId;
+            this.indexOfSelectedId = opt.indexOfSelectedId || this.indexOfSelectedId;
+
+            this.initPrimaryKey = opt.initPrimaryKey || function(opt){}; //not sure if can extend initialize instead.
+            this.initPrimaryKey(opt);
+
             this.setSelectedRows([]);
             this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow())); // true, enable row callback.
             this.subscribeEvt("row:select", function(data){
@@ -70,9 +77,9 @@
             if(!this.canSelectRow()) return;
 
             var row = ev.currentTarget;
-            var id = row.id;
+            var id = this.getRowId(row);
             var selected = this.getSelectedRows();
-            var index = $.inArray(id, selected);
+            var index = this.indexOfSelectedId(id);
             if ( index === -1 ) {
                 if(this.canSelectMultipleRows()) {
                     selected.push( id );
@@ -87,6 +94,30 @@
             }
             $(row).toggleClass(App.css.selected);
             this.setSelectedRows(selected);
+        },
+        // composite key is to override this method.
+        getRowId : function(row) {
+            return row.id;
+        },
+        indexOfSelectedId : function(id) {
+            var selected = this.getSelectedRows();
+            return $.inArray(id, selected);
+        }
+    });
+
+    // incomplete implementation.
+    // alternative implementation is just to combine compositePK into single id. pk1::pk2::pk3
+    // make sure it contains no delimiter. --> put constraint in the
+    App.view.CompositeKeyTable = App.view.Table.extend({
+        initPrimaryKey : function(opt) {
+            this.pk = opt.pk; // expect array.
+        },
+        getRowId : function(row) {
+            return row.id;
+        },
+        indexOfSelectedId : function(id) {
+            var selected = this.getSelectedRows();
+            return $.inArray(id, selected);
         }
     });
 
@@ -110,7 +141,7 @@
             }
         },
         create : function(selectedRow) {
-            App.logDebug("create... selectedRow:" + selectedRow);
+            App.logDebug("create...");
         },
         show : function(selectedRow) {
             App.logDebug("show... selectedRow:" + selectedRow);

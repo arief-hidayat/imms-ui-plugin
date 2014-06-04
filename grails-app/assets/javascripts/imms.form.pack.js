@@ -7,7 +7,7 @@
 //= require imms.datepicker.pack
 //= require_self
 
-(function($, Backbone, _, moment, Bloodhound, App){
+(function($, Backbone, _, moment, App){
 
     App.view.TypeAhead = App.View.extend({
         events : {
@@ -15,12 +15,9 @@
         },
         onSelect : function() {
             var item = this.$el.data("selected-value");
-            App.logDebug("on select " + item);
             if(this.$values != undefined) {
-                App.logDebug("this.$values is ok ");
                 this.$values.children("input").each(function(){
                     var $this = $(this);
-                    App.logDebug("data-field " + $this.data("field"));
                     if($this.data("field")) {
                         var val = item ? item[$this.data("field")] : null;
                         if(val) $this.val(val);
@@ -98,12 +95,66 @@
             "click .nav-tabs li:eq(1) a" : "buildForm"
         },
         remove: function() {
-            if(this.table != null) this.table.remove();
-            if(this.form != null) this.form.remove();
+            if(this.table != null) {
+                this.table.remove();
+                this.table = undefined;
+            }
+            if(this.form != null) {
+                this.form.remove();
+                this.form = undefined;
+            }
             return Backbone.View.prototype.remove.apply(this, arguments);
         },
-        initialize: function() {
+        initialize: function(opt) {
+            var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
+            this.urlCreateForm = opt.urlCreateForm || (App.url + "/" + urlController + "/editableForm/");
+            this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
+            this.urlDeleteJSON = opt.urlDeleteJSON; (App.url + "/" + urlController + "/delete/");
+            this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
             this.setupTab();
+            this.customActions = opt.customActions || this.customActions || { }; // other than show, create, delete
+            this.subscribeEvt("action:create", this.loadForm(this.urlCreateForm));
+            this.subscribeEvt("action:show", this.loadForm(this.urlShowForm));
+            this.subscribeEvt("action:delete", this.deleteForm);
+            for(var customAction in this.customActions) {
+                if(this.customActions.hasOwnProperty(customAction)) {
+                    this.subscribeEvt("action:" + customAction, this.customActions[customAction]);
+                }
+            }
+        },
+        loadForm : function(url, idx) {
+            if(idx == undefined) idx = 1; // 2nd tab is for form.
+            return function(eventData) {
+                App.logDebug("loadForm..." + url);
+                var $formContainer = this.formEl.parent();
+                var opt = {};
+                if(eventData.selectedRows.length > 0) {
+                    opt.id = eventData.selectedRows[0]
+                }
+                this.getHtml(url,opt, function( data ) {
+                    $formContainer.append(data); // note that 'append' only work for two tabs.
+                    if(this.form != null) { this.form.remove(); this.form = undefined; }
+                    this.buildForm();
+                    this.showTab(idx);
+                });
+            }
+        },
+        deleteForm : function(data) { // {selectedRows : selectedRows}
+            App.logDebug("deleteForm..." + url);
+            _.each(data.selectedRows, function(id) {
+                $.ajax({
+                    type: "POST",
+                    url: this.urlDeleteJSON,
+                    data: {id : id , _method: "DELETE", _action_delete : "Delete" }, // not sure if we need those data.
+                    success: function(data){
+                        App.logDebug("deleted " + data);
+                    },
+                    dataType: "JSON"
+                });
+            }, this);
+        },
+        getHtml : function(url, callback) {
+           return $.get(url, callback); // we expect to set the context to this BB view object
         },
         setupTab : function() {
             var $tableLi = this.$(".nav-tabs li:eq(0)"),
@@ -120,13 +171,16 @@
                 this.buildForm();
             }
         },
+        showTab : function(idx) {
+            this.$(".nav-tabs li:eq("+ idx +") a").tab("show");
+        },
         buildTable : function() {
-            if(this.table == undefined) this.table = new App.view.TableRegion( {el: this.tableEl, key: this.key} );
+            if(this.table == undefined) this.table = new App.view.TableRegion( {el: this.tableEl, key: this.key, pubSub: this.pubSub} );
         },
         buildForm : function() {
-            if(this.form == undefined) this.form = new App.view.EditableForm( {el: this.formEl, key: this.key} );
+            if(this.form == undefined) this.form = new App.view.EditableForm( {el: this.formEl, key: this.key, pubSub: this.pubSub} );
         }
     });
 
-})(jQuery, Backbone, _, moment, Bloodhound, App);
+})(jQuery, Backbone, _, moment, App);
 
