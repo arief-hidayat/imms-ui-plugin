@@ -57,6 +57,20 @@
         }
     });
 
+    App.view.ReadOnlyForm = App.View.extend({
+        events : {
+            "click .buttons .btn" : "doAction"
+        },
+        doAction : function(evt) {
+            var $btn = $(evt.currentTarget);
+            App.logDebug("doAction ");
+            return false;
+        },
+        initialize: function(opt) {
+            this.formId = opt.formId;
+        }
+    });
+
     App.view.EditableForm = App.View.extend({
         datePickers : [],
         typeAheadFields : [],
@@ -72,6 +86,7 @@
             return App.View.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
+            this.formId = opt.formId;
             _.each(this.$(".date"), function(elem){
                 var dpEl = this.$el.selector + " #" + elem.id; // so datepicker element must have ID
                 this.datePickers.push(new App.view.DatePicker({ el : dpEl, pubSub : this.pubSub}));
@@ -113,7 +128,8 @@
             this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
             this.urlDeleteJSON = opt.urlDeleteJSON || (App.url + "/" + urlController + "/deleteJSON/");
             this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
-            this.setupTab();
+            this.initialForm = opt.initialForm || {};
+            this.setupTab( this.initialForm );
             this.customActions = opt.customActions || this.customActions || { }; // other than show, create, delete
             this.subscribeEvt("action:create", this.loadForm(this.urlCreateForm));
             this.subscribeEvt("action:show", this.loadForm(this.urlShowForm));
@@ -181,7 +197,7 @@
                 context : this // make sure this BB view is the context
             });
         },
-        setupTab : function() {
+        setupTab : function(initialForm) {
             var $tableLi = this.$(".nav-tabs li:eq(0)"),
                 $formLi = this.$(".nav-tabs li:eq(1)");
             var $tableA = $tableLi.find("a"),
@@ -193,7 +209,7 @@
                 this.buildTable();
             } else {
                 $formA.tab("show");
-                this.buildForm();
+                this.buildForm(initialForm);
             }
         },
         showTab : function(idx) {
@@ -202,8 +218,18 @@
         buildTable : function() {
             if(this.table == undefined) this.table = new App.view.TableRegion( {el: this.tableEl, key: this.key, pubSub: this.pubSub} );
         },
-        buildForm : function() {
-            if(this.form == undefined) this.form = new App.view.EditableForm( {el: this.formEl, key: this.key, pubSub: this.pubSub} );
+        buildForm : function(initialForm) {
+            if(this.form == undefined) {
+                var options = {el: this.formEl, key: this.key, pubSub: this.pubSub};
+                if(initialForm) {
+                    if(initialForm.id) options.formId = initialForm.id;
+                    if(initialForm.action == "show") {
+                        this.form = new App.view.ReadOnlyForm(options);
+                        return;
+                    }
+                }
+                this.form = new App.view.EditableForm(options );
+            }
         }
     });
 })(jQuery, Backbone, _, moment, App);
