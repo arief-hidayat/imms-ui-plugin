@@ -6,7 +6,7 @@
 // to create separate JavaScript files as needed.
 //
 //= require jquery
-//= require jquery.dataTables.min
+//= require jquery.dataTables
 //= require_self
 
 (function($){

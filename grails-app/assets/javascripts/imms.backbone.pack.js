@@ -23,6 +23,7 @@ var pubSub = _.extend({},Backbone.Events); //http://blog.safaribooksonline.com/2
         },
         remove: function() {
 //            this.$el.remove(); // this View is not removing the $el.
+            this.$el.unbind(); // just unbind all event
             this.stopListening();
             return this;
         }

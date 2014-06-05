@@ -144,23 +144,30 @@
         },
         deleteForm : function(data) { // {selectedRows : selectedRows}
             App.logDebug("deleteForm...");
-            _.each(data.selectedRows, function(id) {
-                this.postJSON(this.urlDeleteJSON,
-                    {id : id },
-                    function(data){
-//                        window.console && console.log("deleted. " + data.message);
-                        App.logDebug("deleted " + data.message);
-                        this.publishEvt("item:deleted", data.params); //TODO: onCreate... publish item:created
-                    }
-                );
-            }, this);
+            var ajaxArray = [], i, len;
+            for (i = 0, len = data.selectedRows.length; i < len; i += 1) {
+                ajaxArray.push( this.postJSON(this.urlDeleteJSON, {id : data.selectedRows[i] } ));
+            }
+
+            $.when.apply(this, ajaxArray).done(function(){
+                App.logDebug("rebuild table ");
+                this.publishEvt("item:deleted", data.selectedRows);//TODO: onCreate... publish item:created
+                this.reloadTable();
+            })
+        },
+        reloadTable : function() {
+            if(this.table != null) {
+                this.table.remove(); this.table = undefined;
+            }
+            this.buildTable();
+            this.showTab(0);
         },
         getHtml : function(url, option, callback) {
             return $.ajax({
                 type: "GET",
                 url: url,
-                data: option,
-                success: callback,
+                data: option || {},
+                success: callback || function(){},
                 context : this // make sure this BB view is the context
             });
         },
@@ -168,8 +175,8 @@
             return $.ajax({
                 type: "POST",
                 url: url,
-                data: option,
-                success: callback,
+                data: option || {},
+                success: callback || function(){},
                 dataType: "json",
                 context : this // make sure this BB view is the context
             });
@@ -199,6 +206,5 @@
             if(this.form == undefined) this.form = new App.view.EditableForm( {el: this.formEl, key: this.key, pubSub: this.pubSub} );
         }
     });
-
 })(jQuery, Backbone, _, moment, App);
 

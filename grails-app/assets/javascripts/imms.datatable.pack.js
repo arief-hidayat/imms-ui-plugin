@@ -7,7 +7,6 @@
 //
 //= require app/settings
 //= require jquery
-//= require jquery.dataTables.min
 //= require dt/dataTables.ext
 //= require dataTables.bootstrap
 //= require imms.backbone.pack
@@ -57,6 +56,7 @@
             "click tbody tr": "clickRow"
         },
         initialize: function(opt) {
+            App.logDebug("init...Table");
             this.selectionMode = opt.selectionMode || "single";
             this.getRowId = opt.getRowId || this.getRowId;
             this.indexOfSelectedId = opt.indexOfSelectedId || this.indexOfSelectedId;
@@ -65,6 +65,7 @@
             this.initPrimaryKey(opt);
 
             this.setSelectedRows([]);
+
             this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow())); // true, enable row callback.
             this.subscribeEvt("row:select", function(data){
                 App.logDebug("select key " + data.key + ", id " + data.rowId);
@@ -73,8 +74,8 @@
                 App.logDebug("deselect key " + data.key + ", id " + data.rowId);
             });
 
-            this.subscribeEvt("item:deleted", this.deleteRow);
-            this.subscribeEvt("item:added", this.addRow);
+//            this.subscribeEvt("item:deleted", this.deleteRow);
+//            this.subscribeEvt("item:added", this.addRow);
             // assumed this is triggered by form view after call backend to delete item.
         },
         clickRow : function (ev) {
@@ -82,6 +83,7 @@
 
             var row = ev.currentTarget;
             var id = this.getRowId(row);
+            App.logDebug("clickRow table row#" + id);
             var selected = this.getSelectedRows();
             var index = this.indexOfSelectedId(id);
             if ( index === -1 ) {
@@ -107,19 +109,36 @@
             var selected = this.getSelectedRows();
             return $.inArray(id, selected);
         },
-        deleteRow : function(data) {
-            var table = this.$el.DataTable();
-            var selector = "#"+data.id;
-            App.logDebug("delete Row . selector = " + selector);
-            table.row(selector).remove().draw(false);
-            var index = this.indexOfSelectedId(data.id);
-            if(index !== -1) {
-                this.getSelectedRows().splice( index, 1 );
-            }
-        },
-        addRow : function(rowData) { // array of value
-            this.$el.DataTable().row.add(rowData).draw();
+        remove: function() {
+            App.logDebug("destroy table");
+            this.$el.DataTable().destroy();
+            return App.View.prototype.remove.apply(this, arguments);
         }
+//        ,
+//        deleteRow : function(data) {
+//            var table = this.$el.DataTable();
+//            // deleting item is not working
+////            var $selector = this.$("#"+data.id);
+////            var needToRedraw = false;
+////            if($selector) {
+////                table.row($selector).remove().draw(needToRedraw);
+////            } else {
+////                needToRedraw = true;
+////            }
+////            table.row($selector).remove().draw(needToRedraw);
+////
+//            App.logDebug("delete Row . id = "+ data.id);
+//            var index = this.indexOfSelectedId(data.id);
+//            if(index !== -1) {
+//                this.$("#"+data.id).removeClass(App.css.selected);
+//                this.getSelectedRows().splice( index, 1 );
+//            }
+//            App.logDebug("reload table ");
+//            table.ajax.reload();
+//        },
+//        addRow : function(rowData) { // array of value
+//            this.$el.DataTable().row.add(rowData).draw();
+//        }
     });
 
     // incomplete implementation.
@@ -146,6 +165,7 @@
             "click .buttons .btn": "clickButton"
         },
         initialize: function() {
+            App.logDebug("init...TableRegion");
             this.tableView = new App.view.Table({el: this.$(".table"), key: this.key, pubSub : this.pubSub});
         },
         clickButton : function(ev) {
@@ -165,6 +185,12 @@
         },
         delete : function(selectedRow) {
             App.logDebug("delete... selectedRow:" + selectedRow);
+        },
+        remove: function() {
+            if(this.tableView != null) {
+                this.tableView.remove(); this.tableView = undefined;
+            }
+            return App.View.prototype.remove.apply(this, arguments);
         }
     });
 

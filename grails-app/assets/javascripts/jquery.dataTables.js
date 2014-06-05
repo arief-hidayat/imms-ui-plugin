@@ -7136,7 +7136,8 @@
 	
 	
 	var __reload = function ( settings, holdPosition, callback ) {
-		if ( _fnDataSource( settings ) == 'ssp' ) {
+		if (_fnDataSource( settings ) == 'ssp' ) {
+            window.console && console.log("go to _fnReDraw");
 			_fnReDraw( settings, holdPosition );
 		}
 		else {
