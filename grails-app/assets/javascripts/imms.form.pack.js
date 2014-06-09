@@ -63,8 +63,13 @@
         },
         doAction : function(evt) {
             var $btn = $(evt.currentTarget);
-            App.logDebug("doAction ");
-            return false;
+            App.logDebug("doAction " + $btn.data("action"));
+                if($btn.data("action")) { // e.g. <button data-action="showDialogBeforeSubmit" ... then define the customActions in App.view.TableFormTabs
+                    App.logDebug("doAction " + $btn.data("action"));
+                    this.publishEvt("action:"+ $btn.data("action"), { url : $btn.data("url"), data : this.serializeForm()});
+                    return false;
+                }
+            return true;
         },
         initialize: function(opt) {
             this.formId = opt.formId;
@@ -98,8 +103,21 @@
         },
         doAction : function(evt) {
             var $btn = $(evt.currentTarget);
-            App.logDebug("doAction ");
-            return false;
+            if($btn.data("action")) { // e.g. <button data-action="showDialogBeforeSubmit" ... then define the customActions in App.view.TableFormTabs
+                App.logDebug("doAction " + $btn.data("action"));
+                this.publishEvt("action:"+ $btn.data("action"), { url : $btn.attr("href"), data : this.serializeForm()});
+                return false;
+            }
+            return true;
+        },
+        serializeForm : function(form) {
+            var $form = form ? $(form) : $(this.formId),
+                formData = {}
+                ;
+            _($form.serializeArray()).each(function (nvp) {
+                formData[nvp.name] = nvp.value;
+            });
+            return formData;
         }
     });
 
@@ -126,6 +144,7 @@
             var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
             this.urlCreateForm = opt.urlCreateForm || (App.url + "/" + urlController + "/createForm/");
             this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
+            this.urlEditForm = opt.urlEditForm || (App.url + "/" + urlController + "/editForm/");
             this.urlDeleteJSON = opt.urlDeleteJSON || (App.url + "/" + urlController + "/deleteJSON/");
             this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
             this.initialForm = opt.initialForm || {};
@@ -134,6 +153,7 @@
             this.subscribeEvt("action:create", this.loadForm(this.urlCreateForm));
             this.subscribeEvt("action:show", this.loadForm(this.urlShowForm));
             this.subscribeEvt("action:delete", this.deleteForm);
+            this.subscribeEvt("action:edit", this.loadForm(this.urlEditForm));
             for(var customAction in this.customActions) {
                 if(this.customActions.hasOwnProperty(customAction)) {
                     this.subscribeEvt("action:" + customAction, this.customActions[customAction]);
@@ -147,7 +167,10 @@
                 var $formContainer = $(this.formEl);
                 var opt = {};
                 if(eventData.selectedRows.length > 0) {
-                    opt.id = eventData.selectedRows[0]
+                    opt.id = eventData.selectedRows[0];
+                } else {
+                    var $idField = $formContainer.first("[name='id']");
+                    if($idField) opt.id = $idField.val();
                 }
                 this.getHtml(url, opt, function( data ) {
                     App.logDebug("loadForm to ..." + $formContainer.attr('id'));
