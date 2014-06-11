@@ -5,11 +5,15 @@ import grails.util.Holders
 import org.codehaus.groovy.grails.web.taglib.exceptions.GrailsTagException
 import org.joda.time.DateTime
 import org.joda.time.DateTimeFieldType
+import org.joda.time.LocalDate
+import org.joda.time.LocalTime
 import org.joda.time.ReadableInstant
 import org.joda.time.ReadablePartial
+import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.servlet.support.RequestContextUtils
 
 class BsDatePickerTagLib {
     static namespace = "bs"
@@ -51,6 +55,48 @@ class BsDatePickerTagLib {
         log.debug '***** joda:dateTimePicker *****'
         def fields = [DateTimeFieldType.year(), DateTimeFieldType.monthOfYear(), DateTimeFieldType.dayOfMonth(), DateTimeFieldType.hourOfDay(), DateTimeFieldType.minuteOfHour(), DateTimeFieldType.secondOfMinute()]
         out << buildDatePicker(fields, attrs, "dateTimePicker")
+    }
+
+    protected String getValueString(def attrs, def value) {
+        def locale = attrs.locale ?: RequestContextUtils.getLocale(request)
+        def zone = attrs.zone
+        def chronology = attrs.chronology
+
+        def pattern = attrs.pattern
+        def style = attrs.style
+        if (!pattern && !style) {
+            pattern = patternForType(value.getClass())
+            switch (value) {
+                case LocalDate:
+                    style = 'M-'
+                    break
+                case LocalTime:
+                    style = '-M'
+                    break
+                default:
+                    style = 'MM'
+            }
+        }
+
+        def formatter
+        if (pattern) {
+            formatter = DateTimeFormat.forPattern(pattern).withLocale(locale)
+        } else {
+            formatter = DateTimeFormat.forStyle(style).withLocale(locale)
+        }
+
+        if (zone) formatter = formatter.withZone(zone)
+        if (chronology) formatter = formatter.withChronology(chronology)
+
+        formatter.print(value)
+    }
+
+    private String patternForType(Class type) {
+        patternForType(type.name)
+    }
+
+    private String patternForType(String type) {
+        Holders.config.flatten()."jodatime.format.${type}" ?: null
     }
 
     protected String buildDatePicker(List fields, def attrs, String type) {
@@ -95,8 +141,15 @@ class BsDatePickerTagLib {
         if(attrs.shouldBeBefore) sb.append("data-before='").append(toArrayString(attrs.shouldBeBefore)).append("' ")
 
         if(attrs.id) sb.append "id='${attrs.id}' "
-        sb.append(">").append("<input type='text' ").append("id='").append(attrs.field).append("' class='form-control")
-        sb.append("'/>")
+        sb.append(">").append("<input type='text' ").append("id='").append(attrs.field).append("' class='form-control' ")
+//        sb.append("' name='").append(attrs.field).append("'/>")
+        if(attrs.readonly) {
+            sb.append("readonly='readonly' ")
+        }
+        if( value && (attrs.readonly || attrs.nojs)) {
+            sb.append("value='").append(getValueString(attrs, value)).append("' ")
+        }
+        sb.append("/>")
         String icon = type.equals("timePicker") ? "time" : "calendar"
         sb.append("<span class='input-group-addon'><span class='glyphicon glyphicon-${icon}'></span></span>")
                 .append("</div>")

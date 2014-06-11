@@ -43,6 +43,7 @@ class BsTypeAheadTagLib {
         }
         if(!fields.containsKey(field) && attrs.value) fields.put(field, attrs.value)
         sb.append("<input class='form-control type-ahead' id='").append(id).append("' data-field='").append(field).append("' ")
+        if(attrs.readonly) sb.append("readonly='readonly' ")
         sb.append("data-domain='").append(domain).append("' ")
         if(displayKey) sb.append("data-display-key='").append(displayKey).append("' ")
         if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
