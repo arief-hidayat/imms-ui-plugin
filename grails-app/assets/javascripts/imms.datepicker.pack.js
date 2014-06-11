@@ -28,7 +28,14 @@
             if(this.isTimePicker()) timePickerOpts.pickDate = false;
             this.$el.data("date-format", this.getDateFormat());
             this.picker = this.$el.datetimepicker(timePickerOpts);
+
             // TODO: set date, if any
+            var initDate = this.getDateValue();
+            if(initDate != null) {
+                App.logDebug(this.field + ". set init date. " + initDate);
+
+                this.picker.data("DateTimePicker").setDate(initDate);
+            }
 //            var initialValue = this.$("#" + this.field).val();
 //            if(initialValue != undefined && initialValue != "")
 //                this.picker.setDate(moment(initialValue, this.getDateFormat()));
@@ -65,7 +72,7 @@
             this.setDateValue(e.date);
             this.publishEvt("dp.change:" + this.field, e);
         },
-        getDateValue : function() { return new Date(this.year(), this.month(), this.day(), this.hour(), this.minute(), 0)},
+        getDateValue : function() {  return this.hasValue() ? new Date(this.year(), this.month(), this.day(), this.hour(), this.minute(), 0) : null},
         setDateValue : function(date) {
             App.logDebug("setDateValue: " + date);
 //            var theDate = _.isDate(date) ? moment(date) :
@@ -87,7 +94,10 @@
         hour : function() { return this.valueOf(this.$hour) },
         minute : function() { return this.valueOf(this.$minute) },
         valueOf : function( $val ) {  return ($val == undefined || $val.val() == undefined) ? 0 : parseInt($val.val()); },
-        setValue : function($val, value) { if($val != undefined) { $val.val(value); } }
+        setValue : function($val, value) { if($val != undefined) { $val.val(value); } },
+        hasValue :function() {
+            return this.isTimePicker() ? (this.hour() > 0): (this.year() > 0);
+        }
     });
 })(jQuery, Backbone, _, window.moment, App);
 
