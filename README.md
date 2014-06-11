@@ -1,12 +1,16 @@
+
 grails-app/assets
 
 override:
 javascripts/app/settings.js.
 
-create view with imms.gsp layout. otherwise, you can create your own. use plugin example as reference.
+grails install-imms-template
+then generate-view and generate-controller as usual
+
 
 config:
 
+[code]
 imms {
     datatable {
         rowclass = [
@@ -21,6 +25,9 @@ imms {
         ]
     }
 }
+[/code]
 
 taglib:
+[code]
 <dt:table id='asset-list' key='Asset'/>
+[/code]

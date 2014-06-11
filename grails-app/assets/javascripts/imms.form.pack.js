@@ -103,9 +103,11 @@
         },
         doAction : function(evt) {
             var $btn = $(evt.currentTarget);
-            if($btn.data("action")) { // e.g. <button data-action="showDialogBeforeSubmit" ... then define the customActions in App.view.TableFormTabs
+            if($btn.data("action")) {
+                // e.g. <button data-action="showDialogBeforeSubmit" ... then define the customActions in App.view.TableFormTabs
                 App.logDebug("doAction " + $btn.data("action"));
-                this.publishEvt("action:"+ $btn.data("action"), { url : $btn.attr("href"), data : this.serializeForm()});
+                this.publishEvt("action:"+ $btn.data("action"),
+                    { url : ($btn.data("url") || $btn.attr("href")), data : this.serializeForm()});
                 return false;
             }
             return true;
