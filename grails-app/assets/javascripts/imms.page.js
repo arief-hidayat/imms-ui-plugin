@@ -160,39 +160,55 @@
         },
         onDeleteForm : function(dt){
             var url = dt.url, form = dt.form;
-            this.ajaxRequestForPartialView("POST", url, form , { action : "create"});
+            this.ajaxRequestForPartialView("POST", url, form ,
+                { action : "create"},{ id : form.id, action : "show"});
             // backend is expected to delete item and return _partialCreate
         },
         onEditForm : function(dt){
             var url = dt.url, form = dt.form;
-            this.ajaxRequestForPartialView("GET", url, form , { id : form.id, action : "edit"});
+            this.ajaxRequestForPartialView("GET", url, form ,
+                { id : form.id, action : "edit"}, { id : form.id, action : "show"});
         },
         onSaveForm : function(dt) {
             var url = dt.url, form = dt.form;
-            this.ajaxRequestForPartialView("POST", url, form , { action : "show"});
+            this.ajaxRequestForPartialView("POST", url, form ,
+                { action : "show"}, {  action : "create"});
         },
         onUpdateForm : function(dt) {
             App.logDebug("onUpdateForm ..." );
             var url = dt.url, form = dt.form;
-            this.ajaxRequestForPartialView("POST", url, form , { id : form.id, action : "show"});
+            this.ajaxRequestForPartialView("POST", url, form ,
+                { id : form.id, action : "show"}, { id : form.id, action : "update"});
         },
-        ajaxRequestForPartialView : function(action, url, form, initialForm) {
-            var successCallback = (function(initialForm) {
+        ajaxRequestForPartialView : function(action, url, form, expectedForm, initialForm) {
+            var successCallback = (function(expectedForm) {
                 return function( data ) {
                     if(this.form != null) { this.form.remove(); this.form = undefined; }
                     $(this.formEl).html(data); // note that 'append' only work for two tabs.
-                    if(initialForm.action == "show" && !initialForm.id) {
-                        initialForm.id = $(this.formEl).find("[name='id']").val();
+                    if(expectedForm.action == "show" && !expectedForm.id) {
+                        expectedForm.id = $(this.formEl).find("[name='id']").val();
                     }
-                    this.buildForm(initialForm); // pass id, action
+                    this.buildForm(expectedForm); // pass id, action
                     this.buildTable();
-                    App.logDebug("after successCallback");
+                }
+            })(expectedForm);
+            var failCallback = (function(initialForm){
+                return function(jqXHR) {
+                    switch (jqXHR.status) {
+                        case 404:
+                        case 500:
+                            this.$(".message-container").html(jqXHR.responseText); // untested
+                            break;
+                        default : // 412 used for save/update failed duePrecondition Failed
+                            if(this.form != null) { this.form.remove(); this.form = undefined; }
+                            $(this.formEl).html(jqXHR.responseText); // note that 'append' only work for two tabs.
+                            if(initialForm.action == "show" && !initialForm.id) {
+                                initialForm.id = $(this.formEl).find("[name='id']").val();
+                            }
+                            this.buildForm(initialForm); // pass id, action
+                    }
                 }
             })(initialForm);
-            var failCallback = function(data) {
-                App.logErr("error message: " + data);
-                this.$(".message-container").html(data); // untested
-            };
             form._partial = true;
             this.ajaxHtml(action, url, form, successCallback, failCallback);
         }
