@@ -52,10 +52,18 @@ class ${className}Controller {
     }
 
     def show(${className} ${propertyName}) {
+        if(params._partial) {
+            render(model: [${propertyName}: ${propertyName}], view: "_partialShow")
+            return
+        }
         respond ${propertyName}
     }
 
     def create() {
+        if(params._partial) {
+            render(model: [${propertyName}: new ${className}(params)], view: "_partialCreate")
+            return
+        }
         respond new ${className}(params)
     }
 
@@ -67,15 +75,37 @@ class ${className}Controller {
         }
 
         if (${propertyName}.hasErrors()) {
+            if(params._partial) {
+                render(model: [${propertyName}: ${propertyName}], view: "_partialCreate")
+                return
+            }
             respond ${propertyName}.errors, view:'create'
             return
         }
 
-        ${propertyName}.save flush:true
+
+
+        String msg = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
+        try {
+            ${propertyName}.save flush:true, failOnError: true
+            if(params._partial) {
+                render(model: [${propertyName}: ${propertyName}], view: "_partialShow")
+                return
+            }
+        } catch(Exception e) {
+            if(params._partial) {
+                response.status = 500
+                if (!${propertyName}.hasErrors()) {
+                    flash.message = e.getMessage()
+                }
+                render(model: [${propertyName}: ${propertyName}], view: "_message")
+                return
+            }
+        }
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
+                flash.message = msg
                 redirect ${propertyName}
             }
             '*' { respond ${propertyName}, [status: CREATED] }
@@ -83,6 +113,10 @@ class ${className}Controller {
     }
 
     def edit(${className} ${propertyName}) {
+        if(params._partial) {
+            render(model: [${propertyName}: ${propertyName}], view: "_partialEdit")
+            return
+        }
         respond ${propertyName}
     }
 
@@ -94,15 +128,34 @@ class ${className}Controller {
         }
 
         if (${propertyName}.hasErrors()) {
+            if(params._partial) {
+                render(model: [${propertyName}: ${propertyName}], view: "_partialEdit")
+                return
+            }
             respond ${propertyName}.errors, view:'edit'
             return
         }
-
-        ${propertyName}.save flush:true
+        String msg = message(code: 'default.updated.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+        try {
+            ${propertyName}.save flush:true, failOnError: true
+            if(params._partial) {
+                render(model: [${propertyName}: ${propertyName}], view: "_partialShow")
+                return
+            }
+        } catch(Exception e) {
+            if(params._partial) {
+                response.status = 500
+                if (!${propertyName}.hasErrors()) {
+                    flash.message = e.getMessage()
+                }
+                render(model: [${propertyName}: ${propertyName}], view: "_message")
+                return
+            }
+        }
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+                flash.message = msg
                 redirect ${propertyName}
             }
             '*'{ respond ${propertyName}, [status: OK] }
@@ -117,11 +170,22 @@ class ${className}Controller {
             return
         }
 
-        ${propertyName}.delete flush:true
-
+        String msg = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+        try {
+            ${propertyName}.delete flush:true
+            if(params._partial) {
+                render(model: [${propertyName}: ${propertyName}], view: "_partialCreate")
+                return
+            }
+        } catch(Exception e) {
+            if(params._partial) {
+                render(model: [${propertyName}: ${propertyName}], view: "_message")
+                return
+            }
+        }
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+                flash.message = msg
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -129,9 +193,14 @@ class ${className}Controller {
     }
 
     protected void notFound() {
+        String msg = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
+        if(params._partial) {
+            render(status: NOT_FOUND, text: msg)
+            return
+        }
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
+                flash.message = msg
                 redirect action: "index", method: "GET"
             }
             '*'{ render status: NOT_FOUND }
