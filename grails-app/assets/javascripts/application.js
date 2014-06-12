@@ -6,8 +6,7 @@
 // to create separate JavaScript files as needed.
 //
 //= require jquery
-//= require imms.datatable.pack
-//= require imms.form.pack
+//= require imms.page
 //= require_self
 
 if (typeof jQuery !== 'undefined') {

@@ -3,9 +3,10 @@
 // + typeahead https://github.com/bassjobsen/Bootstrap-3-Typeahead
 //
 //
+//= require app/settings
 //= require moment.min
-//= require imms.backbone.pack
 //= require imms.bootstrap.pack
+//= require imms.backbone.pack
 //= require_self
 
 (function($, Backbone, _, moment, App){

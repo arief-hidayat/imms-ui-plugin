@@ -64,13 +64,13 @@
             this.initPrimaryKey = opt.initPrimaryKey || function(opt){}; //not sure if can extend initialize instead.
             this.initPrimaryKey(opt);
 
-            this.setSelectedRows([]);
+            this.setSelectedRows(opt.selectedRows || []);
 
             this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow())); // true, enable row callback.
-            this.subscribeEvt("row:select", function(data){
+            this.subscribeEvt("table:row:select", function(data){
                 App.logDebug("select key " + data.key + ", id " + data.rowId);
             });
-            this.subscribeEvt("row:deselect", function(data){
+            this.subscribeEvt("table:row:deselect", function(data){
                 App.logDebug("deselect key " + data.key + ", id " + data.rowId);
             });
 
@@ -93,10 +93,10 @@
                     selected = [id];
                     $(row).siblings().removeClass(App.css.selected); // remove other selected item;
                 }
-                this.publishEvt("row:select",{ rowId : id });
+                this.publishEvt("table:row:select",{ rowId : id });
             } else {
                 selected.splice( index, 1 );
-                this.publishEvt("row:deselect",{ rowId : id });
+                this.publishEvt("table:row:deselect",{ rowId : id });
             }
             $(row).toggleClass(App.css.selected);
             this.setSelectedRows(selected);
@@ -113,6 +113,14 @@
             App.logDebug("destroy table");
             this.$el.DataTable().destroy();
             return App.View.prototype.remove.apply(this, arguments);
+        },
+        deleteRowById : function(id) {
+            var index = this.indexOfSelectedId(id);
+            if(index !== -1) {
+                var selected = this.getSelectedRows();
+                selected.splice( index, 1 );
+                this.setSelectedRows(selected);
+            }
         }
 //        ,
 //        deleteRow : function(data) {
@@ -174,7 +182,7 @@
             var selectedRows = this.tableView.getSelectedRows();
             if(callback != undefined && this[callback] != undefined) {
                 this[callback].call(this, selectedRows);
-                this.publishEvt("action:" + callback, {selectedRows : selectedRows});
+                this.publishEvt("table:action:" + callback, {selectedRows : selectedRows});
             }
         },
         create : function(selectedRow) {
@@ -185,6 +193,19 @@
         },
         delete : function(selectedRow) {
             App.logDebug("delete... selectedRow:" + selectedRow);
+        },
+        deleteRowById : function(id) {
+            this.tableView.deleteRowById(id);
+            this.reloadTable();
+        },
+        reloadTable: function() {
+            this.initTable(this.tableView.getSelectedRows());
+        },
+        initTable : function(selectedRows) {
+            if(this.tableView != null) {
+                this.tableView.remove(); this.tableView = undefined;
+            }
+            this.tableView = new App.view.Table({el: this.$(".table"), key: this.key, pubSub : this.pubSub, selectedRows : selectedRows});
         },
         remove: function() {
             if(this.tableView != null) {
