@@ -43,6 +43,7 @@
             this.displayKey = this.$el.data("display-key") || "value";
             this.name = opt.name || this.key;
 
+            this.$el.attr('autocomplete', 'off');
             //http://stackoverflow.com/questions/14901535/bootstrap-typeahead-ajax-result-format-example/14959406#14959406
             //http://tatiyants.com/how-to-use-json-objects-with-twitter-bootstrap-typeahead/
             this.$el.typeahead({
