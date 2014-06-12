@@ -26,28 +26,7 @@
             </div>
         </div>
         <div id="detail-section" class="tab-pane col-md-12">
-            <div class="row">
-                <g:if test="\${flash.message}">
-                    <div class="message" role="status">\${flash.message}</div>
-                </g:if>
-                <g:hasErrors bean="\${${propertyName}}">
-                    <ul class="errors" role="alert">
-                        <g:eachError bean="\${${propertyName}}" var="error">
-                            <li <g:if test="\${error in org.springframework.validation.FieldError}">data-field-id="\${error.field}"</g:if>><g:message error="\${error}"/></li>
-                        </g:eachError>
-                    </ul>
-                </g:hasErrors>
-            </div>
-            <div class="row">
-                <g:form id="${className}-create-form" url="[resource:${propertyName}, action:'save']" <%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
-                <fieldset class="form">
-                    <g:render template="form"/>
-                </fieldset>
-                <fieldset class="buttons">
-                    <g:submitButton name="create" class="btn btn-success save" value="\${message(code: 'default.button.create.label', default: 'Create')}" />
-                </fieldset>
-                </g:form>
-            </div>
+            <g:render template="partialCreate"/>
         </div>
     </div>
 </div>
