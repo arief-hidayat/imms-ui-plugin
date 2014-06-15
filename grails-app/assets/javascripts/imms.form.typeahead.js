@@ -33,9 +33,9 @@
         },
         // <input class=".type-ahead" id="assetInstance-type" data-field="type" data-domain="assetType" data-display-key='value' data-items='all' data-minLength='2'/>
         // <div id="type-values">
-//        <input type="hidden" name="typeId" data-field="id">
-//        <input type="hidden" name="typeCd" data=field="code">
-//        </div>
+        //      <input type="hidden" name="typeId" data-field="id">
+        //      <input type="hidden" name="typeCd" data=field="code">
+        // </div>
         initialize: function(opt) {
             this.field = this.$el.data("field"); // fieldName
             this.key = this.$el.data("domain"); //domain class
@@ -46,11 +46,15 @@
             this.$el.attr('autocomplete', 'off');
             //http://stackoverflow.com/questions/14901535/bootstrap-typeahead-ajax-result-format-example/14959406#14959406
             //http://tatiyants.com/how-to-use-json-objects-with-twitter-bootstrap-typeahead/
-            this.$el.typeahead({
-                isObjectItem : true, displayKey : this.displayKey, autoSelect : false,
-                remoteUrl : this.$el.data("source-url") || App.url + "/typeAhead/" + this.key,
-                remoteDefaultOpts : { max : 50}
-            });
+            if(this.$el.data("source")) {
+                this.$el.typeahead();
+            } else {
+                this.$el.typeahead({
+                    isObjectItem : true, displayKey : this.displayKey, autoSelect : false,
+                    remoteUrl : this.$el.data("source-url") || App.url + "/typeAhead/" + this.key,
+                    remoteDefaultOpts : { max : 50}
+                });
+            }
         },
         remove: function() {
             if(this.$el.data('typeahead')) {
