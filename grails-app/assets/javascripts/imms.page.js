@@ -214,7 +214,6 @@
         }
     });
 
-
     App.view.TableFormTabs = App.view.TableFormSinglePage.extend({
         events : {
             "click .nav-tabs li:eq(0) a" : "buildTable",

@@ -76,6 +76,7 @@ class ${className}Controller {
 
         if (${propertyName}.hasErrors()) {
             if(params._partial) {
+                response.status = 412
                 render(model: [${propertyName}: ${propertyName}], view: "_partialCreate")
                 return
             }
@@ -129,6 +130,7 @@ class ${className}Controller {
 
         if (${propertyName}.hasErrors()) {
             if(params._partial) {
+                response.status = 412
                 render(model: [${propertyName}: ${propertyName}], view: "_partialEdit")
                 return
             }

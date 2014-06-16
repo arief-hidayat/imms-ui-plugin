@@ -15,8 +15,8 @@
 (function($, Backbone, App){
 
     App.dataTableOptions = function($root, key, enableRowCallback) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
-        var tableConf = App.dt.config.table[key];
-        var customUrlConf = App.dt.config.customUrl[key];
+        var tableConf = App.dt.config.table[key] || {};
+        var customUrlConf = App.dt.config.customUrl[key] || {};
 
         var pipelineOpt = { url : App.url + "/dataTable/" + key};
         if(customUrlConf != undefined) {
@@ -26,7 +26,7 @@
         var ret = {
             "processing": true,
             "serverSide": true,
-            "columns" : tableConf.columns,
+            "columns" : tableConf.columns || {},
 //            language: {
 //                url: "/assets/localization/table/"+ App.options.language + ".json"
 //            },
