@@ -159,20 +159,16 @@
     // make sure it contains no delimiter. --> put constraint in the
     App.view.CompositeKeyTable = App.view.Table.extend({
         // new App.view.CompositeKeyTable( el: '#asset-list', key: 'AssetWorkOrder', parentField : 'asset.id', parentFieldValue : "1",
-        // 				childField : 'workOrder.id',
+        // 				childField : 'workOrder.id', filter?
         // 				pk : ['assetId','workOrderId'])
         otherInitialization : function(opt) {
-            this.parentFieldValue = opt.parentFieldValue;
-            this.parentField = opt.parentField;
-            this.childField = opt.childField;
-            this.keyDelimiter = opt.keyDelimiter || "_";
+            this.filter = opt.filter || {};
         },
         getCustomUrl : function() {
-            var filter = {};
-            filter[this.parentField] = this.parentFieldValue;
-            return { data : { filter : filter} }; // to be overridden for hasMany table
+            return { data : { filter : this.filter } }; // to be overridden for hasMany table
         }
     });
+
 
 
     App.view.TableRegion = App.View.extend({
@@ -181,9 +177,16 @@
         events: {
             "click .buttons .btn": "clickButton"
         },
-        initialize: function() {
+        otherInitialization : function(opt) {
+
+        },
+        initialize: function(opt) {
             App.logDebug("init...TableRegion");
-            this.tableView = new App.view.Table({el: this.$(".table"), key: this.key, pubSub : this.pubSub});
+            this.otherInitialization(opt);
+            this.initView(opt);
+        },
+        initView : function(opt) {
+            this.initTable();
         },
         clickButton : function(ev) {
             var $btn = $(ev.currentTarget);
@@ -223,6 +226,8 @@
             return App.View.prototype.remove.apply(this, arguments);
         }
     });
+
+
 
 
 
