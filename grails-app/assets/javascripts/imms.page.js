@@ -214,6 +214,53 @@
         }
     });
 
+
+    // table + button action + typeAhead search
+    App.view.TableWithSearchRegion = App.view.TableRegion.extend({
+        otherInitialization : function(opt) {
+            this.searchEl = opt.searchEl || "#search";
+            this.filter = opt.filter || {};
+            var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
+            this.addUrl = App.url + "/" + urlController + "/addJSON";
+        },
+        initTable : function(selectedRows) {
+            if(this.tableView != null) {
+                this.tableView.remove(); this.tableView = undefined;
+            }
+            this.tableView = new App.view.CompositeKeyTable({el: this.$(".table"), key: this.key,
+                filter: this.filter, pubSub : this.pubSub});
+        },
+        initView : function(opt) {
+            this.initTable();
+
+            this.searchView = new App.view.TypeAhead({ el : this.$(this.searchEl), pubSub : this.pubSub,
+                filter : this.filter,
+                onSelect : function() {
+                    var item = this.$el.data("selected-value");
+                    this.pubSub.publishEvt("manyToMany:add", item);
+                }});
+//            this.subscribeEvt("manyToMany:add", function(item){
+//                this.postJSON(this.addUrl, item, function(){
+//                    App.logDebug("reload table ");
+//                    this.tableView.reloadTable();
+//                });
+//            });
+        },
+        postJSON : function(url, option, callback) {
+            return $.ajax({
+                type: "POST",
+                url: url,
+                data: option || {},
+                success: callback || function(){},
+                dataType: "json",
+                context : this // make sure this BB view is the context
+            });
+        }
+    });
+    App.view.ManyToManyTableForm = App.view.TableFormSinglePage.extend({
+        //TODO:
+    });
+
     App.view.TableFormTabs = App.view.TableFormSinglePage.extend({
         events : {
             "click .nav-tabs li:eq(0) a" : "buildTable",
