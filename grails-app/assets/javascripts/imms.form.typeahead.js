@@ -51,7 +51,7 @@
                 this.$el.typeahead({
                     isObjectItem : true, displayKey : this.displayKey, autoSelect : false,
                     remoteUrl : this.$el.data("source-url") || App.url + "/typeAhead/" + this.key,
-                    remoteDefaultOpts : { max : 50}
+                    remoteDefaultOpts : $.extend(opt.filter || {}, { max : 50})
                 });
             }
         },
