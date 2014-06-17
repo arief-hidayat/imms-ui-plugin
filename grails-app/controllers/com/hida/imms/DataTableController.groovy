@@ -9,6 +9,6 @@ class DataTableController {
 
     def list(String domainName) {
         DataTableRequest req = new DataTableRequest(params)
-        render dataTableService.list(domainName, req) as JSON
+        render dataTableService.list(domainName, req, params.filter ?: [:]) as JSON
     }
 }

@@ -158,9 +158,19 @@
     // alternative implementation is just to combine compositePK into single id. pk1::pk2::pk3
     // make sure it contains no delimiter. --> put constraint in the
     App.view.CompositeKeyTable = App.view.Table.extend({
-        indexOfSelectedId : function(id) {
-            var selected = this.getSelectedRows();
-            return $.inArray(id, selected);
+        // new App.view.CompositeKeyTable( el: '#asset-list', key: 'AssetWorkOrder', parentField : 'asset.id', parentFieldValue : "1",
+        // 				childField : 'workOrder.id',
+        // 				pk : ['assetId','workOrderId'])
+        otherInitialization : function(opt) {
+            this.parentFieldValue = opt.parentFieldValue;
+            this.parentField = opt.parentField;
+            this.childField = opt.childField;
+            this.keyDelimiter = opt.keyDelimiter || "_";
+        },
+        getCustomUrl : function() {
+            var filter = {};
+            filter[this.parentField] = this.parentFieldValue;
+            return { data : { filter : filter} }; // to be overridden for hasMany table
         }
     });
 

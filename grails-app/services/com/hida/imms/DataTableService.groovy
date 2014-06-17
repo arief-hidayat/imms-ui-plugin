@@ -16,14 +16,14 @@ class DataTableService {
     }
 
     @Transactional(readOnly = true)
-    DataTableResponse list(String key, DataTableRequest req) { // for simplicity, key is domainName
+    DataTableResponse list(String key, DataTableRequest req, def additionalFilter= [:]) { // for simplicity, key is domainName
 //        println "list dataTable -> ${req.draw} ${req.start} ${req.length}. search : ${req.search}"
         if(req.search.value && Holders.pluginManager.hasGrailsPlugin('searchable')) {
             return listBySearchablePlugin(key, req)
         } else {
             // hibernate-search plugin?
         }
-        return listByDefaultHibernatePlugin(key, req)
+        return listByDefaultHibernatePlugin(key, req, additionalFilter)
     }
 
     protected def listBySearchablePlugin(String key, DataTableRequest req) {
@@ -48,16 +48,17 @@ class DataTableService {
         resp
     }
 
-    protected def listByDefaultHibernatePlugin(String key, DataTableRequest req) {
+    protected def listByDefaultHibernatePlugin(String key, DataTableRequest req, def additionalFilter= [:]) {
         DataTableResponse resp = new DataTableResponse(draw: req.draw)
         Class domainClz = getClassFromKey(key)
         Criteria criteria = domainClz.createCriteria()
         def results = criteria.list(max : req.length, offset: req.start) { //PagedResultList
+            additionalFilter.each { String fieldFilter, String fieldValue -> eq(fieldFilter, getValue(fieldValue)) }
             for(DtReqOrder ord : req.orders)
                 order(req.columns.get(ord.column).data, ord.dir)
             for(DtReqColumn col : req.columns) {
                 if(col.search.value) {
-                    if(!col.search.regex) eq(col.data, col.search.value) //TODO: this works only for String value.
+                    if(!col.search.regex) eq(col.data, getValue(col.search.value))
                     // no support for regex
                 }
             }
@@ -66,5 +67,11 @@ class DataTableService {
         resp.withData(results.list)
         resp.recordsTotal = domainClz.count()
         resp
+    }
+
+    protected def getValue(String data) {
+        if( data ==~ /\d+/) return Long.parseLong(data)
+        else if( data ==~ /\d+[.]\d+/) return new BigDecimal(data)
+        return data
     }
 }
