@@ -14,9 +14,9 @@
 
 (function($, Backbone, App){
 
-    App.dataTableOptions = function($root, key, enableRowCallback) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
-        var tableConf = App.dt.config.table[key] || {};
-        var customUrlConf = App.dt.config.customUrl[key] || {};
+    App.dataTableOptions = function($root, key, enableRowCallback, customUrl) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
+            var tableConf = App.dt.config.table[key] || {};
+        var customUrlConf = App.dt.config.customUrl[key] || customUrl || {};
 
         var pipelineOpt = { url : App.url + "/dataTable/" + key};
         if(customUrlConf != undefined) {
