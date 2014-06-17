@@ -55,18 +55,20 @@
         events: {
             "click tbody tr": "clickRow"
         },
+        otherInitialization : function(opt) {
+        },
         initialize: function(opt) {
             App.logDebug("init...Table");
             this.selectionMode = opt.selectionMode || "single";
             this.getRowId = opt.getRowId || this.getRowId;
             this.indexOfSelectedId = opt.indexOfSelectedId || this.indexOfSelectedId;
 
-            this.initPrimaryKey = opt.initPrimaryKey || function(opt){}; //not sure if can extend initialize instead.
-            this.initPrimaryKey(opt);
+            this.pk = opt.pk || this.pk;
 
             this.setSelectedRows(opt.selectedRows || []);
 
-            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow())); // true, enable row callback.
+            this.otherInitialization(opt);
+            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow(), this.getCustomUrl())); // true, enable row callback.
             this.subscribeEvt("table:row:select", function(data){
                 App.logDebug("select key " + data.key + ", id " + data.rowId);
             });
@@ -77,6 +79,9 @@
 //            this.subscribeEvt("item:deleted", this.deleteRow);
 //            this.subscribeEvt("item:added", this.addRow);
             // assumed this is triggered by form view after call backend to delete item.
+        },
+        getCustomUrl : function() {
+            return undefined; // to be overridden for hasMany table
         },
         clickRow : function (ev) {
             if(!this.canSelectRow()) return;
@@ -153,12 +158,6 @@
     // alternative implementation is just to combine compositePK into single id. pk1::pk2::pk3
     // make sure it contains no delimiter. --> put constraint in the
     App.view.CompositeKeyTable = App.view.Table.extend({
-        initPrimaryKey : function(opt) {
-            this.pk = opt.pk; // expect array.
-        },
-        getRowId : function(row) {
-            return row.id;
-        },
         indexOfSelectedId : function(id) {
             var selected = this.getSelectedRows();
             return $.inArray(id, selected);
