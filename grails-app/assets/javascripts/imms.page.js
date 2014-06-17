@@ -6,33 +6,34 @@
 //= require_self
 
 (function($, Backbone, _, moment, App){
-
     App.view.TableFormSinglePage = App.View.extend({
         el : '#content-section', tableEl : '#list-section', formEl : '#detail-section',
         table : null, form : null,
         events : {
         },
-        initialize: function(opt) {
+        otherInitialization : function(opt) {
+            this.initialForm = opt.initialForm || {};
+        },
+        initTableActionListeners : function(opt) {
             var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
             this.urlCreateForm = opt.urlCreateForm || (App.url + "/" + urlController + "/createForm/");
             this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
             this.urlEditForm = opt.urlEditForm || (App.url + "/" + urlController + "/editForm/");
             this.urlDeleteJSON = opt.urlDeleteJSON || (App.url + "/" + urlController + "/deleteJSON/");
             this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
-            this.initialForm = opt.initialForm || {};
-            this.setupInitView( this.initialForm );
+
             this.otherTableActions = opt.otherTableActions || this.otherTableActions || { }; // other than show, create, delete
             this.subscribeEvt("table:action:create", this.loadForm(this.urlCreateForm));
             this.subscribeEvt("table:action:show", this.loadForm(this.urlShowForm));
-            this.subscribeEvt("table:action:delete", this.deleteForm);
+            this.subscribeEvt("table:action:delete", this.deleteItems);
             this.subscribeEvt("table:action:edit", this.loadForm(this.urlEditForm)); // is this used?
             for(var customAction in this.otherTableActions) {
                 if(this.otherTableActions.hasOwnProperty(customAction)) {
                     this.subscribeEvt("table:action:" + customAction, this.otherTableActions[customAction]);
                 }
             }
-
-
+        },
+        initFormActionListeners : function(opt) {
             this.otherFormActions = opt.otherFormActions || this.otherFormActions || { }; // other than show, create, delete
             this.subscribeEvt("form:action:save", this.onSaveForm);
             this.subscribeEvt("form:action:edit", this.onEditForm);
@@ -44,17 +45,16 @@
                 }
             }
         },
+        initialize: function(opt) {
+            this.otherInitialization(opt);
+            this.setupInitView();
+            this.initTableActionListeners(opt);
+            this.initFormActionListeners(opt);
+        },
         loadForm : function(url) {
             return function(eventData) {
                 App.logDebug("enter loadForm from url" + url);
-                var opt = {};
-                if(eventData && eventData.selectedRows.length > 0) {
-                    opt.id = eventData.selectedRows[0];
-                } else {
-                    var formId = this.getFormId();
-                    if(formId) opt.id = formId;
-                }
-                this.getHtml(url, opt, function( data ) {
+                this.getHtml(url, this.getIdAsParam(eventData), function( data ) {
                     if(this.form != null) { this.form.remove(); this.form = undefined; }
                     $(this.formEl).html(data); // note that 'append' only work for two tabs.
                     this.buildForm();
@@ -62,19 +62,30 @@
                 });
             }
         },
-        deleteForm : function(data) { // {selectedRows : selectedRows}
+        getIdAsParam:  function(eventData, idx) {
+            var opt = {};
+            if(eventData && eventData.selectedRows.length > 0) {
+                opt.id = eventData.selectedRows[idx || 0];
+            } else {
+                return this.getFormId();
+            }
+            return opt;
+        },
+        getStringId : function(formId) {
+            return formId.id;
+        },
+        deleteItems : function(data) { // {selectedRows : selectedRows}
             var ajaxArray = [], i, len, formId = this.getFormId(), resetForm = false;
-            App.logDebug("deleteForm...");
+            App.logDebug("deleteItems...");
 
             for (i = 0, len = data.selectedRows.length; i < len; i += 1) {
                 if(formId) {
-                    App.logDebug("formId=" + formId + ", data.selectedRows[i]=" + data.selectedRows[i]);
-                    if(formId == data.selectedRows[i]) {
+                    if(this.getStringId(formId) == data.selectedRows[i]) {
                         App.logDebug("reset form...");
                         resetForm = true;
                     }
                 }
-                ajaxArray.push( this.postJSON(this.urlDeleteJSON, {id : data.selectedRows[i] } ));
+                ajaxArray.push( this.postJSON(this.urlDeleteJSON, this.getIdAsParam(data, i)));
             }
 
             $.when.apply(this, ajaxArray).done(function(){
@@ -110,36 +121,9 @@
                 this.buildForm();
             });
         },
-        getHtml : function(url, option, callback) {
-            return $.ajax({
-                type: "GET",
-                url: url,
-                data: option || {},
-                success: callback || function(){},
-                context : this // make sure this BB view is the context
-            });
-        },
-        postJSON : function(url, option, callback) {
-            return $.ajax({
-                type: "POST",
-                url: url,
-                data: option || {},
-                success: callback || function(){},
-                dataType: "json",
-                context : this // make sure this BB view is the context
-            });
-        },
-        ajaxHtml : function(action, url, option, successCallBack, failCallback) {
-            return $.ajax({
-                type: action,
-                url: url,
-                data: option || {},
-                context : this // make sure this BB view is the context
-            }).done(successCallBack || function(){}).fail(failCallback || function(){});
-        },
-        setupInitView : function(initialForm) {
+        setupInitView : function() {
             this.buildTable();
-            this.buildForm(initialForm);
+            this.buildForm(this.initialForm);
         },
         getFormId : function() {
             var $formContainer = $(this.formEl);
@@ -179,6 +163,33 @@
             var url = dt.url, form = dt.form;
             this.ajaxRequestForPartialView("POST", url, form ,
                 { id : form.id, action : "show"}, { id : form.id, action : "update"});
+        },
+        getHtml : function(url, option, callback) {
+            return $.ajax({
+                type: "GET",
+                url: url,
+                data: option || {},
+                success: callback || function(){},
+                context : this // make sure this BB view is the context
+            });
+        },
+        postJSON : function(url, option, callback) {
+            return $.ajax({
+                type: "POST",
+                url: url,
+                data: option || {},
+                success: callback || function(){},
+                dataType: "json",
+                context : this // make sure this BB view is the context
+            });
+        },
+        ajaxHtml : function(action, url, option, successCallBack, failCallback) {
+            return $.ajax({
+                type: action,
+                url: url,
+                data: option || {},
+                context : this // make sure this BB view is the context
+            }).done(successCallBack || function(){}).fail(failCallback || function(){});
         },
         ajaxRequestForPartialView : function(action, url, form, expectedForm, initialForm) {
             var successCallback = (function(expectedForm) {
@@ -220,8 +231,6 @@
         otherInitialization : function(opt) {
             this.searchEl = opt.searchEl || "#search";
             this.filter = opt.filter || {};
-            var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
-            this.addUrl = App.url + "/" + urlController + "/addJSON";
         },
         initTable : function(selectedRows) {
             if(this.tableView != null) {
@@ -239,26 +248,95 @@
                     var item = this.$el.data("selected-value");
                     this.pubSub.publishEvt("manyToMany:add", item);
                 }});
-//            this.subscribeEvt("manyToMany:add", function(item){
-//                this.postJSON(this.addUrl, item, function(){
-//                    App.logDebug("reload table ");
-//                    this.tableView.reloadTable();
-//                });
-//            });
-        },
-        postJSON : function(url, option, callback) {
-            return $.ajax({
-                type: "POST",
-                url: url,
-                data: option || {},
-                success: callback || function(){},
-                dataType: "json",
-                context : this // make sure this BB view is the context
-            });
         }
     });
     App.view.ManyToManyTableForm = App.view.TableFormSinglePage.extend({
-        //TODO:
+        otherInitialization : function(opt) {
+            this.tableEl = opt.tableEl;
+            this.searchEl = opt.searchEl;
+            this.formEl = opt.formEl;
+            this.parentField = opt.parentField;
+            this.childField = opt.childField;
+            this.keyDelimiter = opt.keyDelimiter || "_";
+            this.parentFieldVal = opt.parentFieldVal;
+            this.filter = {};
+            this.filter[this.parentField] = this.parentFieldVal;
+        },
+        initTableActionListeners : function(opt) {
+            var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
+            this.addUrl = App.url + "/" + urlController + "/addJSON";
+            this.subscribeEvt("manyToMany:add", function(item){
+                this.postJSON(this.addUrl, item, function(){
+                    App.logDebug("reload table ");
+                    this.tableView.reloadTable();
+                });
+            });
+
+            this.urlShowForm = opt.urlShowForm || (App.url + "/" + urlController + "/showForm/");
+            this.urlDeleteJSON = opt.urlDeleteJSON || (App.url + "/" + urlController + "/deleteJSON/");
+            this.urlDeleteConfirmationForm = opt.urlDeleteConfirmationForm; // optional
+
+            this.otherTableActions = opt.otherTableActions || this.otherTableActions || { }; // other than show, create, delete
+            this.subscribeEvt("table:action:show", this.loadForm(this.urlShowForm));
+            this.subscribeEvt("table:action:delete", this.deleteItems);
+            for(var customAction in this.otherTableActions) {
+                if(this.otherTableActions.hasOwnProperty(customAction)) {
+                    this.subscribeEvt("table:action:" + customAction, this.otherTableActions[customAction]);
+                }
+            }
+        },
+        getFormId : function() {
+            var $formContainer = $(this.formEl);
+            if($formContainer) {
+                var opt = {};
+                var $parentIdField = $formContainer.find("[name='"+ this.parentField + "']");
+                if($parentIdField) {
+                    App.logDebug("parent Id :" + $parentIdField.val());
+                    opt[this.parentField] = $parentIdField.val();
+                }
+                var $childIdField = $formContainer.find("[name='"+ this.childField + "']");
+                if($childIdField) {
+                    App.logDebug("child Id :" + $childIdField.val());
+                    opt[this.childField] = $childIdField.val();
+                }
+                return opt;
+            }
+            return null;
+        },
+        getIdAsParam:  function(eventData, idx) {
+            if(eventData && eventData.selectedRows.length > 0) {
+                var opt = {};
+                var ids = eventData.selectedRows[idx || 0].split(this.keyDelimiter, 2);
+                opt[this.parentField] = ids[0];
+                opt[this.childField] = ids[1];
+                return opt;
+            } else {
+               return this.getFormId();
+            }
+        },
+        getStringId : function(formId) {
+            return formId[this.parentField] + this.keyDelimiter + formId[this.childField];
+        },
+        initFormActionListeners : function(opt) {
+            //TODO: currently only support read only form.
+        },
+        buildForm : function(initialForm) {
+            if(this.form == undefined) {
+                var options = {el: this.$(this.formEl), key: this.key, pubSub: this.pubSub};
+                this.form = new App.view.ReadOnlyForm(options);
+            }
+        },
+        setupInitView : function() {
+            this.buildTable();
+//            this.buildForm(initialForm);
+        },
+        buildTable : function() {
+            if(this.table == undefined) {
+                this.table = new App.view.TableWithSearchRegion( {el: this.$(this.tableEl), key: this.key, pubSub: this.pubSub,
+                    searchEl : this.$(this.searchEl), filter : this.filter} );
+            }
+            else this.table.reloadTable();
+        }
     });
 
     App.view.TableFormTabs = App.view.TableFormSinglePage.extend({
@@ -266,7 +344,7 @@
             "click .nav-tabs li:eq(0) a" : "buildTable",
             "click .nav-tabs li:eq(1) a" : "buildForm"
         },
-        setupInitView : function(initialForm) {
+        setupInitView : function() {
             this.tableIdx = 0;
             this.formIdx = 1;
             var $tableLi = this.$(".nav-tabs li:eq(0)"),
@@ -280,7 +358,7 @@
                 this.buildTable();
             } else {
                 $formA.tab("show");
-                this.buildForm(initialForm);
+                this.buildForm(this.initialForm);
             }
         },
         showForm : function() {
