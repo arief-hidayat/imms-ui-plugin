@@ -26,6 +26,8 @@ grails-app/conf/Config.groovy:
         imms {
         
             datatable {
+
+                compositekeydelimiter = '_'
             
                 rowclass = [ Asset : { Asset item -> ... } ]
                 

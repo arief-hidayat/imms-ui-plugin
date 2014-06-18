@@ -7,6 +7,8 @@ App.format = App.format || {
 };
 //ref jodatime.format.org.joda.time.LocalDate and http://momentjs.com/docs #format
 
+App.compositekeydelimiter = '_';
+
 App.dt = App.dt || { };
 App.dt.config = App.dt.config || {};
 

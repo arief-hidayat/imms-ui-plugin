@@ -257,7 +257,7 @@
             this.formEl = opt.formEl;
             this.parentField = opt.parentField;
             this.childField = opt.childField;
-            this.keyDelimiter = opt.keyDelimiter || "_";
+            this.keyDelimiter = opt.keyDelimiter || App.compositekeydelimiter || "_";
             this.parentFieldVal = opt.parentFieldVal;
             this.filter = {};
             this.filter[this.parentField] = this.parentFieldVal;
