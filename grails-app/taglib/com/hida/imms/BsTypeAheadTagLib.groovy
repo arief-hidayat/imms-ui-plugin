@@ -34,29 +34,45 @@ class BsTypeAheadTagLib {
     private StringBuilder buildTypeAheadDiv(def attrs) {
         StringBuilder sb = new StringBuilder()
         String parentInstance = attrs.parentInstance, domain = attrs.domain, displayKey = displayKeyConf[domain],
-                field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}", id = attrs.id ?: "${parentInstance}-${field}"
+                field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}",
+                id = attrs.id ?: ( attrs.parentInstance ? "${parentInstance}-${field}" : field)
 
-        def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: [:]
-        def fields = attrs.fields ?: [:]
-        if(!populatedFieldsConf.containsKey(field) && displayKey) {
-            populatedFieldsConf.put(field, displayKey)
+
+        if(!parentInstance) { // case without parentInstance and field
+            sb.append("<input class='form-control type-ahead' id='").append(id).append("' ")
+            if(attrs.readonly) sb.append("readonly='readonly' ")
+            sb.append("data-domain='").append(domain).append("' ")
+            if(displayKey) sb.append("data-display-key='").append(displayKey).append("' ")
+            if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
+            if(attrs.minLength)  sb.append("data-minLength='").append(attrs.minLength).append("' ")
+            if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
+            sb.append("placeholder='").append(placeholder).append("'/>")
+//            sb.append("<div id='").append(field).append("-values'>")
+//            sb.append("</div>")
+        } else {
+            def fields = attrs.fields ?: [:]
+            if(!fields.containsKey(field) && attrs.value) fields.put(field, attrs.value)
+            sb.append("<input class='form-control type-ahead' id='").append(id).append("' data-field='").append(field).append("' ")
+            if(attrs.readonly) sb.append("readonly='readonly' ")
+            sb.append("data-domain='").append(domain).append("' ")
+            if(displayKey) sb.append("data-display-key='").append(displayKey).append("' ")
+            if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
+            if(attrs.minLength)  sb.append("data-minLength='").append(attrs.minLength).append("' ")
+            if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
+            sb.append("placeholder='").append(placeholder).append("'/>")
+
+            sb.append("<div id='").append(field).append("-values'>")
+            def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: [:]
+            if(!populatedFieldsConf.containsKey(field) && displayKey) {
+                populatedFieldsConf.put(field, displayKey)
+            }
+            populatedFieldsConf.each { parentFieldNm, originalFieldNm ->
+                sb.append("<input type='hidden' name='").append(parentFieldNm).append("' data-field='").append(originalFieldNm).append("' ")
+                if(fields.containsKey(parentFieldNm)) sb.append("value='").append(fields[parentFieldNm]).append("' ")
+                sb.append(">")
+            }
+            sb.append("</div>")
         }
-        if(!fields.containsKey(field) && attrs.value) fields.put(field, attrs.value)
-        sb.append("<input class='form-control type-ahead' id='").append(id).append("' data-field='").append(field).append("' ")
-        if(attrs.readonly) sb.append("readonly='readonly' ")
-        sb.append("data-domain='").append(domain).append("' ")
-        if(displayKey) sb.append("data-display-key='").append(displayKey).append("' ")
-        if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
-        if(attrs.minLength)  sb.append("data-minLength='").append(attrs.minLength).append("' ")
-        if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
-        sb.append("placeholder='").append(placeholder).append("'/>")
-        sb.append("<div id='").append(field).append("-values'>")
-        populatedFieldsConf.each { parentFieldNm, originalFieldNm ->
-            sb.append("<input type='hidden' name='").append(parentFieldNm).append("' data-field='").append(originalFieldNm).append("' ")
-            if(fields.containsKey(parentFieldNm)) sb.append("value='").append(fields[parentFieldNm]).append("' ")
-            sb.append(">")
-        }
-        sb.append("</div>")
         sb
     }
 
