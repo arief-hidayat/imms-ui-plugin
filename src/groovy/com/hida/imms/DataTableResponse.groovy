@@ -16,6 +16,9 @@ class DataTableResponse {
     static def domainFieldsConf = Holders.config.imms?.datatable?.domainfields ?: [:] // can be array of fieldName or callback function.
     static final String ROW_ID = "DT_RowId", ROW_CLASS= "DT_RowClass", ROW_DATA = "DT_RowData"
 
+    static def compositeKeyMap = [:]
+    static String compositeKeyDelimiter = Holders.config.imms?.datatable?.compositekeydelimiter ?: "_"
+
     DataTableResponse withData(def list) {
         list.each { data << DataTableResponse.Item.build(it) }
         this
@@ -44,6 +47,7 @@ class DataTableResponse {
             return map;
         }
 
+
         /**
          * if not configured (e.g imms.datatable.domainkey.Asset). then it's a domain with id as single PK.
          * @param map
@@ -54,8 +58,13 @@ class DataTableResponse {
                 def conf = domainKeyConf[it.class.simpleName]
                 conf.each { fieldKey -> map[fieldKey] = it[fieldKey]}
             } else {
-                map[ROW_ID] = it.id
-                map[ROW_DATA] = [ id : it.id]
+                if(!compositeKeyMap.containsValue(it.class.simpleName))
+                    compositeKeyMap.put(it.class.simpleName, DomainClassUtil.getPrimaryKey(it.class))
+                def compositeKey = compositeKeyMap.get(it.class.simpleName)
+                def val = [], data = [:]
+                for(String key : compositeKey) { val << it[key]; data[key] = it[key] }
+                map[ROW_ID] = val.join(compositeKeyDelimiter)
+                map[ROW_DATA] = data
             }
             return this
         }
