@@ -22,6 +22,7 @@ class ${className}Controller {
         render(model: [${propertyName}: ${propertyName}], view: "_partialShow") //
     }
 
+    @Transactional
     def deleteJSON() {
         ${className} ${propertyName} = ${className}.get(params.id)
         if(${propertyName} == null) {
