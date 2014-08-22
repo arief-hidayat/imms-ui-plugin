@@ -10,6 +10,34 @@
 
 (function($, Backbone, _, App){
 
+
+    App.view.ManyToManyView = App.View.extend({
+        searchView : null, searchEl : null, listView : null,
+        items : [], toRemove : [],
+        readOnly : true,
+        localPubSub : _.extend({},Backbone.Events),
+        remove: function() {
+            if(this.searchView) this.searchView.remove();
+            return App.View.prototype.remove.apply(this, arguments);
+        },
+        initialize: function(opt) {
+            this.searchEl = opt.searchEl;
+            if(opt.readOnly) this.readOnly = opt.readOnly;
+            this.searchView = new App.view.TypeAhead({ el : this.searchEl, pubSub : this.localPubSub, publishSearch : true });
+            this.subscribeEvt("ta:search", this.onSelectedItem);
+        },
+        onSelectedItem : function(item) {
+
+            this.searchView.reset();
+        },
+        populateItems : function() {
+
+        },
+        renderItem : function(item) {
+
+        }
+    });
+
     App.view.ReadOnlyForm = App.View.extend({
         events : {
             "submit form" : "ignoreSubmit",

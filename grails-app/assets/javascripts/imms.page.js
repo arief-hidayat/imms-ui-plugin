@@ -8,7 +8,7 @@
 (function($, Backbone, _, moment, App){
     App.view.TableFormSinglePage = App.View.extend({
         el : '#content-section', tableEl : '#list-section', formEl : '#detail-section',
-        table : null, form : null,
+        table : null, form : null, manyToManyTables : null,
         events : {
         },
         otherInitialization : function(opt) {
@@ -107,12 +107,23 @@
                 if(initialForm) {
                     if(initialForm.id) options.formId = initialForm.id;
                     if(initialForm.action == "show") {
-                        this.form = new App.view.ReadOnlyForm(options);
+                        if(!options.formId) {
+                            return; // show without id.
+                        }
+                        this.setReadOnlyForm(options);
+//                        this.form = new App.view.ReadOnlyForm(options);
                         return;
                     }
                 }
-                this.form = new App.view.EditableForm(options );
+                this.setEditableForm(options);
+//                this.form = new App.view.EditableForm(options );
             }
+        },
+        setReadOnlyForm : function(options) {
+            this.form = new App.view.ReadOnlyForm(options);
+        },
+        setEditableForm : function(options) {
+            this.form = new App.view.EditableForm(options);
         },
         resetForm : function() {
             this.getHtml(this.urlCreateForm, null, function( data ) {

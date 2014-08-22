@@ -46,9 +46,10 @@ class BsTypeAheadTagLib {
             if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
             if(attrs.minLength)  sb.append("data-minLength='").append(attrs.minLength).append("' ")
             if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
-            sb.append("placeholder='").append(placeholder).append("'/>")
+            sb.append("placeholder='").append(attrs.placeholder ?: placeholder).append("'/>")
 //            sb.append("<div id='").append(field).append("-values'>")
 //            sb.append("</div>")
+
         } else {
             def fields = attrs.fields ?: [:]
             if(!fields.containsKey(field) && attrs.value) fields.put(field, attrs.value)
@@ -59,7 +60,7 @@ class BsTypeAheadTagLib {
             if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
             if(attrs.minLength)  sb.append("data-minLength='").append(attrs.minLength).append("' ")
             if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
-            sb.append("placeholder='").append(placeholder).append("'/>")
+            sb.append("placeholder='").append(attrs.placeholder ?: placeholder).append("'/>")
 
             sb.append("<div id='").append(field).append("-values'>")
             def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: [:]
