@@ -9,10 +9,10 @@
 //= require_self
 
 (function($, Backbone, _, App){
-
+    App.template.ManyToManyItem = _.template("hello: <%= name %>"); //TODO:
 
     App.view.ManyToManyView = App.View.extend({
-        searchView : null, searchEl : null, listView : null,
+        searchView : null, searchEl : null, listEl : null,
         items : [], toRemove : [],
         readOnly : true,
         localPubSub : _.extend({},Backbone.Events),
@@ -21,20 +21,66 @@
             return App.View.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
+            this.queryListUrl = opt.queryListUrl;
+            this.postItemUrl = opt.postItemUrl;
             this.searchEl = opt.searchEl;
+            this.listEl = opt.listEl;
             if(opt.readOnly) this.readOnly = opt.readOnly;
             this.searchView = new App.view.TypeAhead({ el : this.searchEl, pubSub : this.localPubSub, publishSearch : true });
             this.subscribeEvt("ta:search", this.onSelectedItem);
         },
         onSelectedItem : function(item) {
+            var isExist = this.isItemExist(item);
+            if(isExist) {
 
+            } else {
+                this.items.push(item);
+                this.renderItem(item);
+            }
             this.searchView.reset();
         },
         populateItems : function() {
-
+            this.getJSON(this.queryListUrl, {}, function(allItems) {
+                this.items = allItems || [];
+                this.removeAllItemsFromView();
+                for(var i=0;i<this.items.length;i++) {
+                    this.renderItem(this.items[i]);
+                }
+            });
+        },
+        postJSON : function(url, option, callback) {
+            return $.ajax({
+                type: "POST",
+                url: url,
+                data: option || {},
+                success: callback || function(){},
+                dataType: "json",
+                context : this // make sure this BB view is the context
+            });
+        },
+        getJSON : function(url, option, callback) {
+            return $.ajax({
+                type: "GET",
+                url: url,
+                data: option || {},
+                success: callback || function(){},
+                dataType: "json",
+                context : this // make sure this BB view is the context
+            });
+        },
+        isItemExist : function(item) {
+            for(var i=0;i<this.items.length;i++) {
+                if(item["id"] == this.items[i]["id"]) {
+                    return true
+                }
+            }
+            return false;
+        },
+        removeAllItemsFromView : function() {
+            this.$(this.listEl + " .item").remove(); // TODO: make sure all item has class item
         },
         renderItem : function(item) {
-
+            App.template.ManyToManyItem(item);
         }
     });
 
