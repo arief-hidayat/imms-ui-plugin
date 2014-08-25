@@ -16,9 +16,9 @@ class BsManyToManyTagLib {
 //    </div>
 //    <bs:manyToMany
 //    id="user-roles"
-//    manyToManyClass="UserRole"
-//    parent="userId" parentId="1"
-//    children="roleId"
+//    mappingClass="UserRole"
+//    parentField="userId" parentId="1"
+//    childField="roleId"
 //    typeAheadFrom="Role"
 //    onList="/role/list"	[id, display, url, removable]
 //    onAdd="/userRole/add"
@@ -32,14 +32,23 @@ class BsManyToManyTagLib {
         messageSource.getMessage("placeholder.typeahead.add.label", null, "type ahead & select to add item ...",
                 LocaleContextHolder.locale)
     }
+    protected String getRemoveItemPlaceholder() {
+        messageSource.getMessage("placeholder.item.remove.label", null, "Remove Selected Item(s)",
+                LocaleContextHolder.locale)
+    }
 
     def manyToMany = {attrs ->
+        out << "<div id='${attrs.id}' data-mappingclass='${attrs.manyToManyClass}' data-readonly='${attrs.readonly}' data-parentfield='${attrs.parentField}' data-parentid='${attrs.parentId}' data-childfield='${attrs.childField}'>"
         out << "<div class='row' id='command-${attrs.id}'>"
         out << bs.typeAhead([ domain: attrs.typeAheadFrom, id : "search-"+attrs.id, readonly : attrs.readonly,
                               placeholder : typeAheadPlaceholder])
+        out << "<button type='button' class='btn btn-danger remove-item' style='display:none;'>"
+        out << removeItemPlaceholder
+        out << "</button>"
         out << "</div>"
-        out << "<div class='row' id='list-${attrs.id}'>"
+        out << "<div class='row list-item' id='list-${attrs.id}'>"
         out << "" // template of each item here. rendered dynamically
+        out << "</div>"
         out << "</div>"
     }
 //TODO: continue

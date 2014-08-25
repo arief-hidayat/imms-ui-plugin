@@ -8,9 +8,10 @@
 ////    }
 //};
 //
-//App.dt.config.customUrl = {
+//App.dt.config.customUrl = { /// for dataTable query
 ////        Asset : {
 ////            url : "only for custom",
+////            data : function(){},
 ////            extraParams : function(request) { }
 ////        }
 //};

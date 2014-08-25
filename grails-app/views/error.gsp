@@ -13,6 +13,7 @@
 			<ul class="errors">
 				<li>An error has occurred</li>
 			</ul>
+            <div class="item "><button type='button' class='btn btn-default' disabled='disabled'>Button</button></div>
 		</g:else>
 	</body>
 </html>

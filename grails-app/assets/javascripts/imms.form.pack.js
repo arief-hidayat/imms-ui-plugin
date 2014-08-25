@@ -9,29 +9,49 @@
 //= require_self
 
 (function($, Backbone, _, App){
-    App.template.ManyToManyItem = _.template("hello: <%= name %>"); //TODO:
+    App.template.ManyToManyItem = _.template("<div class='item col-md-2'><button type='button' class='btn btn-default' disabled='disabled'><span class='glyphicon glyphicon-ok'></span> <%= text %></button></div>");
 
     App.view.ManyToManyView = App.View.extend({
-        searchView : null, searchEl : null, listEl : null,
+        searchView : null, searchEl : null, listEl : null, removeBtnEl : null,
+        mappingClass : null, parentField : null, parentId : null, childField : null,
         items : [], toRemove : [],
         readOnly : true,
         localPubSub : _.extend({},Backbone.Events),
         remove: function() {
             if(this.searchView) this.searchView.remove();
+            this.removeAllItemsFromView();
             return App.View.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
-            this.queryListUrl = opt.queryListUrl;
-            this.postItemUrl = opt.postItemUrl;
-            this.searchEl = opt.searchEl;
-            this.listEl = opt.listEl;
-            if(opt.readOnly) this.readOnly = opt.readOnly;
-            this.searchView = new App.view.TypeAhead({ el : this.searchEl, pubSub : this.localPubSub, publishSearch : true });
-            this.subscribeEvt("ta:search", this.onSelectedItem);
+            if(opt.readOnly) this.readOnly = opt.readOnly || this.$el.data("readonly");
+            this.mappingClass = opt.mappingClass || this.$el.data("mappingclass");
+            this.parentField = opt.parentField || this.$el.data("parentfield"); this.parentId = opt.parentId || this.$el.data("parentid");
+            this.childField = opt.childField || this.$el.data("childfield");
+            this.listEl = opt.listEl || (this.$el.selector + " #" + this.$(".list-item").id);
+            this.removeBtnEl = opt.removeBtnEl || (this.$el.selector + " .remove-item");
+            if(!this.readOnly) {
+                this.queryListUrl = opt.queryListUrl;
+                this.postItemUrl = opt.postItemUrl;
+                this.searchEl = opt.searchEl || (this.$el.selector + " #" + this.$(".type-ahead").id) ;
+                this.searchView = new App.view.TypeAhead({ el : this.searchEl, pubSub : this.localPubSub, publishSearch : true });
+                this.subscribeEvt("ta:search", this.onSelectedItem);
+            }
+            this.populateItems();
+        },
+        onRemoveItems : function() {
+            this.$(this.removeBtnEl).hide();
         },
         onSelectedItem : function(item) {
-            var isExist = this.isItemExist(item);
-            if(isExist) {
+            var index = this.getIndexOf(item);
+            if(index >= 0) {
+                //TODO: toggle selection, show delete button. hide search button
+                this.$(this.listEl + " .item:eq(" + index + ")").toggleClass(".selected");
+                if(this.items.length > 0) {
+                    this.$(this.removeBtnEl).show();
+                }
+                else {
+                    this.$(this.removeBtnEl).hide();
+                }
 
             } else {
                 this.items.push(item);
@@ -40,7 +60,8 @@
             this.searchView.reset();
         },
         populateItems : function() {
-            this.getJSON(this.queryListUrl, {}, function(allItems) {
+            var options = {parentField : this.parentField, parentId: this.parentId, mappingClass : this.mappingClass, childField : this.childField};
+            this.getJSON(this.queryListUrl, options, function(allItems) {
                 this.items = allItems || [];
                 this.removeAllItemsFromView();
                 for(var i=0;i<this.items.length;i++) {
@@ -68,13 +89,13 @@
                 context : this // make sure this BB view is the context
             });
         },
-        isItemExist : function(item) {
+        getIndexOf : function(item) {
             for(var i=0;i<this.items.length;i++) {
                 if(item["id"] == this.items[i]["id"]) {
-                    return true
+                    return i;
                 }
             }
-            return false;
+            return -1;
         },
         removeAllItemsFromView : function() {
             this.$(this.listEl + " .item").remove(); // TODO: make sure all item has class item

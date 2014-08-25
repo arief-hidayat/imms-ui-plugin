@@ -10,8 +10,10 @@ class DataTableService {
 
     static final Map<String, Class> keyClassMap = new LinkedHashMap<>()
     protected Class getClassFromKey(String key) {
-        if(!keyClassMap.containsKey(key))
+        if(!keyClassMap.containsKey(key)) {
+
             keyClassMap.put(key, grailsApplication.domainClasses.find { it.clazz.simpleName == key }?.clazz)
+        }
         keyClassMap.get(key)
     }
 
