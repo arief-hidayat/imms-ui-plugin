@@ -19,10 +19,7 @@ class BsManyToManyTagLib {
 //    mappingClass="UserRole"
 //    parentField="userId" parentId="1"
 //    childField="roleId"
-//    typeAheadFrom="Role"
-//    onList="/role/list"	[id, display, url, removable]
-//    onAdd="/userRole/add"
-//    onRemove="/userRole/remove"/>
+//    typeAheadFrom="Role" />
 //    def messageSource
 //    protected String getPlaceholder() {
 //        messageSource.getMessage("placeholder.typeahead.label", null, "type ahead and select ...", LocaleContextHolder.locale)
@@ -38,7 +35,7 @@ class BsManyToManyTagLib {
     }
 
     def manyToMany = {attrs ->
-        out << "<div id='${attrs.id}' data-mappingclass='${attrs.manyToManyClass}' data-readonly='${attrs.readonly}' data-parentfield='${attrs.parentField}' data-parentid='${attrs.parentId}' data-childfield='${attrs.childField}'>"
+        out << "<div id='${attrs.id}' class='many-to-many' data-mappingclass='${attrs.manyToManyClass}' data-readonly='${attrs.readonly}' data-parentfield='${attrs.parentField}' data-parentid='${attrs.parentId}' data-childfield='${attrs.childField}'>"
         out << "<div class='row' id='command-${attrs.id}'>"
         out << bs.typeAhead([ domain: attrs.typeAheadFrom, id : "search-"+attrs.id, readonly : attrs.readonly,
                               placeholder : typeAheadPlaceholder])

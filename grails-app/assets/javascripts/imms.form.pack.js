@@ -30,8 +30,9 @@
             this.listEl = opt.listEl || (this.$el.selector + " #" + this.$(".list-item").id);
             this.removeBtnEl = opt.removeBtnEl || (this.$el.selector + " .remove-item");
             if(!this.readOnly) {
-                this.queryListUrl = opt.queryListUrl;
-                this.postItemUrl = opt.postItemUrl;
+                this.queryListUrl = opt.queryListUrl ||(App.url + '/manyToMany/list');
+                this.addItemUrl = opt.addItemUrl ||(App.url + '/manyToMany/addItem');
+                this.removeItemUrl = opt.removeItemUrl ||(App.url + '/manyToMany/removeItem');
                 this.searchEl = opt.searchEl || (this.$el.selector + " #" + this.$(".type-ahead").id) ;
                 this.searchView = new App.view.TypeAhead({ el : this.searchEl, pubSub : this.localPubSub, publishSearch : true });
                 this.subscribeEvt("ta:search", this.onSelectedItem);
@@ -101,11 +102,12 @@
             this.$(this.listEl + " .item").remove(); // TODO: make sure all item has class item
         },
         renderItem : function(item) {
-            App.template.ManyToManyItem(item);
+            App.template.ManyToManyItem (item);
         }
     });
 
     App.view.ReadOnlyForm = App.View.extend({
+        manyToManyFields : [],
         events : {
             "submit form" : "ignoreSubmit",
             "click .buttons .btn" : "submitForm"
@@ -146,6 +148,13 @@
         },
         initialize: function(opt) {
             this.formId = opt.formId;
+            this.setupManyToManyFields(true);
+        },
+        setupManyToManyFields : function(readOnly) {
+            _.each(this.$(".many-to-many"), function(elem){
+                var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
+                this.manyToManyFields.push(new App.view.ManyToManyView({ el : mmEl, pubSub : this.pubSub, readOnly : readOnly}));
+            }, this);
         }
     });
 
@@ -166,10 +175,17 @@
         },
         initialize: function(opt) {
             this.formId = opt.formId;
+            this.setupDatePickerFields();
+            this.setupTypeAheadFields();
+            this.setupManyToManyFields(false);
+        },
+        setupDatePickerFields : function() {
             _.each(this.$(".date"), function(elem){
                 var dpEl = this.$el.selector + " #" + elem.id; // so datepicker element must have ID
                 this.datePickers.push(new App.view.DatePicker({ el : dpEl, pubSub : this.pubSub}));
             }, this);
+        },
+        setupTypeAheadFields : function() {
             _.each(this.$(".type-ahead"), function(elem){
                 var dpEl = this.$el.selector + " #" + elem.id; // so typeahead element must have ID
                 this.typeAheadFields.push(new App.view.TypeAhead({ el : dpEl, pubSub : this.pubSub}));

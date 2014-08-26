@@ -9,18 +9,13 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
 class TypeAheadService {
 
     def typeAheadConf = Holders.config.imms?.typeahead?.displayKey ?: [:]
-    def grailsApplication
-    static final Map<String, Class> keyClassMap = new LinkedHashMap<>()
-    protected GrailsDomainClass getClassFromKey(String key) {
-        if(!keyClassMap.containsKey(key))
-            keyClassMap.put(key, (GrailsDomainClass) grailsApplication.domainClasses.find { it.clazz.simpleName == key } )
-        keyClassMap.get(key)
-    }
+    def immsUiUtilService
+
 
     @Transactional(readOnly = true)
     def list(String key, def params, String query) {
         def conf = typeAheadConf[key]
-        GrailsDomainClass grailsDomainClass = getClassFromKey(key)
+        GrailsDomainClass grailsDomainClass = immsUiUtilService.getClassFromKey(key)
         Class domainClz = grailsDomainClass.clazz
         if(conf) {
             if(conf instanceof String) {

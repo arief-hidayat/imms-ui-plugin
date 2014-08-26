@@ -6,16 +6,7 @@ import org.grails.datastore.mapping.query.api.Criteria
 
 @Transactional
 class DataTableService {
-    def grailsApplication
-
-    static final Map<String, Class> keyClassMap = new LinkedHashMap<>()
-    protected Class getClassFromKey(String key) {
-        if(!keyClassMap.containsKey(key)) {
-
-            keyClassMap.put(key, grailsApplication.domainClasses.find { it.clazz.simpleName == key }?.clazz)
-        }
-        keyClassMap.get(key)
-    }
+    def immsUiUtilService
 
     @Transactional(readOnly = true)
     DataTableResponse list(String key, DataTableRequest req, def additionalFilter= [:]) { // for simplicity, key is domainName
@@ -31,7 +22,7 @@ class DataTableService {
     protected def listBySearchablePlugin(String key, DataTableRequest req) {
         DataTableResponse resp = new DataTableResponse(draw: req.draw)
         def searchOptions = [offset: req.start, max: req.length]
-        Class domainClz = getClassFromKey(key)
+        Class domainClz = immsUiUtilService.getClassFromKey(key)
         def searchResults = domainClz.search({
             if(req.search.value) must(queryString(req.search.value))
             for(DtReqColumn col : req.columns) {
@@ -52,7 +43,7 @@ class DataTableService {
 
     protected def listByDefaultHibernatePlugin(String key, DataTableRequest req, def additionalFilter= [:]) {
         DataTableResponse resp = new DataTableResponse(draw: req.draw)
-        Class domainClz = getClassFromKey(key)
+        Class domainClz = immsUiUtilService.getClassFromKey(key)
         Criteria criteria = domainClz.createCriteria()
         def results = criteria.list(max : req.length, offset: req.start) { //PagedResultList
             additionalFilter.each { String fieldFilter, String fieldValue -> eq(fieldFilter, getValue(fieldValue)) }
