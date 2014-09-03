@@ -7,5 +7,5 @@ class DtReqSearch {
     String value
     boolean regex
 
-    public String toString() { "[$value] ${regex ? 'with regex': 'no regex'}"}
+    public String toString() { "[$value] ${regex ? 'with regex' : 'no regex'}" }
 }

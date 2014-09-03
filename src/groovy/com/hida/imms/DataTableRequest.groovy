@@ -17,21 +17,21 @@ class DataTableRequest {
         this.search = new DtReqSearch(value: params["search[value]"], regex: Boolean.parseBoolean(params["search[regex]"]))
         this.orders = new ArrayList<>()
         int orderCount = 0;
-        while(true) {
-            if(!params["order[$orderCount][column]"]) break
+        while (true) {
+            if (!params["order[$orderCount][column]"]) break
             this.orders.add(new DtReqOrder(column: Integer.parseInt(params["order[$orderCount][column]"]), dir: params["order[$orderCount][dir]"]))
             orderCount++
         }
         this.columns = new ArrayList<>()
-        int colCount =0;
-        while(true) {
-            if(!params["columns[$colCount][data]"]) break
+        int colCount = 0;
+        while (true) {
+            if (!params["columns[$colCount][data]"]) break
             this.columns.add(new DtReqColumn(
-                    data : params["columns[$colCount][data]"],
+                    data: params["columns[$colCount][data]"],
                     name: params["columns[$colCount][name]"],
-                    searchable:  Boolean.parseBoolean(params["columns[$colCount][searchable]"]),
-                    orderable:  Boolean.parseBoolean(params["columns[$colCount][orderable]"]),
-                    search : new DtReqSearch(value: params["columns[$colCount][search][value]"], regex: Boolean.parseBoolean(params["columns[$colCount][search][regex]"]))
+                    searchable: Boolean.parseBoolean(params["columns[$colCount][searchable]"]),
+                    orderable: Boolean.parseBoolean(params["columns[$colCount][orderable]"]),
+                    search: new DtReqSearch(value: params["columns[$colCount][search][value]"], regex: Boolean.parseBoolean(params["columns[$colCount][search][regex]"]))
             ))
             colCount++
         }

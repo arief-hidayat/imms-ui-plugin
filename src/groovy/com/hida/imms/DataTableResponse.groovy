@@ -13,8 +13,9 @@ class DataTableResponse {
 
     static def rowClassConf = Holders.config.imms?.datatable?.rowclass ?: [:]
     static def domainKeyConf = Holders.config.imms?.datatable?.domainkey ?: [:]
-    static def domainFieldsConf = Holders.config.imms?.datatable?.domainfields ?: [:] // can be array of fieldName or callback function.
-    static final String ROW_ID = "DT_RowId", ROW_CLASS= "DT_RowClass", ROW_DATA = "DT_RowData"
+    static def domainFieldsConf = Holders.config.imms?.datatable?.domainfields ?: [:]
+    // can be array of fieldName or callback function.
+    static final String ROW_ID = "DT_RowId", ROW_CLASS = "DT_RowClass", ROW_DATA = "DT_RowData"
 
     static def compositeKeyMap = [:]
     static String compositeKeyDelimiter = Holders.config.imms?.datatable?.compositekeydelimiter ?: "_"
@@ -23,6 +24,7 @@ class DataTableResponse {
         list.each { data << DataTableResponse.Item.build(it) }
         this
     }
+
     static class Item {
         def map
 
@@ -37,16 +39,15 @@ class DataTableResponse {
         private def populateFieldData(def it) {
             def map = [:]
             String domainNm = it.class.simpleName
-            if(!domainFieldsConf.containsKey(domainNm)) throw new RuntimeException("missing configuration for ${domainNm}")
-            def conf= domainFieldsConf[domainNm]
-            if(conf instanceof Collection) {
-                conf.each { fieldKey -> map[fieldKey] = it[fieldKey]}
+            if (!domainFieldsConf.containsKey(domainNm)) throw new RuntimeException("missing configuration for ${domainNm}")
+            def conf = domainFieldsConf[domainNm]
+            if (conf instanceof Collection) {
+                conf.each { fieldKey -> map[fieldKey] = it[fieldKey] }
             } else {
                 map = conf(it) //expect a callback function.
             }
             return map;
         }
-
 
         /**
          * if not configured (e.g imms.datatable.domainkey.Asset). then it's a domain with id as single PK.
@@ -54,15 +55,17 @@ class DataTableResponse {
          * @param it
          */
         private Item populateKey(def it) {
-            if(domainKeyConf.containsKey(it.class.simpleName)) {
+            if (domainKeyConf.containsKey(it.class.simpleName)) {
                 def conf = domainKeyConf[it.class.simpleName]
-                conf.each { fieldKey -> map[fieldKey] = it[fieldKey]}
+                conf.each { fieldKey -> map[fieldKey] = it[fieldKey] }
             } else {
-                if(!compositeKeyMap.containsValue(it.class.simpleName))
+                if (!compositeKeyMap.containsValue(it.class.simpleName))
                     compositeKeyMap.put(it.class.simpleName, DomainClassUtil.getPrimaryKey(it.class))
                 def compositeKey = compositeKeyMap.get(it.class.simpleName)
                 def val = [], data = [:]
-                for(String key : compositeKey) { val << it[key]; data[key] = it[key] }
+                for (String key : compositeKey) {
+                    val << it[key]; data[key] = it[key]
+                }
                 map[ROW_ID] = val.join(compositeKeyDelimiter)
                 map[ROW_DATA] = data
             }
@@ -70,10 +73,10 @@ class DataTableResponse {
         }
 
         private Item populateRowClass(def it) {
-            if(rowClassConf.containsKey(it.class.simpleName)) {
+            if (rowClassConf.containsKey(it.class.simpleName)) {
                 def conf = rowClassConf[it.class.simpleName]
                 String value = (conf instanceof String) ? conf : conf(it)
-                if(value) map[ROW_CLASS] = value
+                if (value) map[ROW_CLASS] = value
             }
             return this
         }
