@@ -34,7 +34,7 @@ class TypeAheadService {
                     if(params.max) maxResults(Integer.parseInt("${params.max}"))
                 }
             }
-        } else if(Holders.pluginManager.hasGrailsPlugin("searchable") &&
+        } else if((Holders.pluginManager.hasGrailsPlugin("searchable") || Holders.pluginManager.hasGrailsPlugin("elasticsearch")) &&
                 GrailsClassUtils.getStaticPropertyValue(domainClz, "searchable")) {
             return domainClz.search(query, escape: true)
         } else {

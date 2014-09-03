@@ -2,6 +2,7 @@ package com.hida.imms
 
 import grails.transaction.Transactional
 import grails.util.Holders
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.grails.datastore.mapping.query.api.Criteria
 
 @Transactional
@@ -11,7 +12,9 @@ class DataTableService {
     @Transactional(readOnly = true)
     DataTableResponse list(String key, DataTableRequest req, def additionalFilter= [:]) { // for simplicity, key is domainName
 //        println "list dataTable -> ${req.draw} ${req.start} ${req.length}. search : ${req.search}"
-        if(req.search.value && Holders.pluginManager.hasGrailsPlugin('searchable')) {
+        Class domainClz = immsUiUtilService.getClassFromKey(key)
+        if(req.search.value && (Holders.pluginManager.hasGrailsPlugin("searchable") || Holders.pluginManager.hasGrailsPlugin("elasticsearch")) &&
+                GrailsClassUtils.getStaticPropertyValue(domainClz, "searchable")) {
             return listBySearchablePlugin(key, req)
         } else {
             // hibernate-search plugin?
