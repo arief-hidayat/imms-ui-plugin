@@ -5,7 +5,7 @@
 //
 //= require app/settings
 //= require jquery
-//= require bootstrap.min
+//= require bootstrap-3.2.0.min
 //= require bootstrap-datetimepicker.min
 //= require_self
 
