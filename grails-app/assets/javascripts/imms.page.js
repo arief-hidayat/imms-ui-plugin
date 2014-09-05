@@ -81,10 +81,11 @@
         },
         deleteItems : function(data) { // {selectedRows : selectedRows}
             var ajaxArray = [], i, len, formId = this.getFormId(), resetForm = false;
-            App.logDebug("deleteItems...");
+            App.logDebug("deleteItems... formId=" + formId);
 
             for (i = 0, len = data.selectedRows.length; i < len; i += 1) {
                 if(formId) {
+                    App.logDebug("compare with data.selectedRows[i] = " + data.selectedRows[i]);
                     if(this.getStringId(formId) == data.selectedRows[i]) {
                         App.logDebug("reset form...");
                         resetForm = true;
@@ -101,8 +102,8 @@
                     this.publishEvt("table:item:deleted", data.selectedRows);//TODO: onCreate... publish item:created
                     this.buildTable();
                 });
-                if(resetForm) this.resetForm();
             }
+            if(resetForm) this.resetForm();
         },
         buildTable : function() {
             if(this.table == undefined) {
@@ -151,7 +152,7 @@
                 var $idField = $formContainer.find("[name='id']");
                 if($idField) {
                     App.logDebug("form Id :" + $idField.val());
-                    return $idField.val();
+                    return {'id' : $idField.val()};
                 }
             }
             return null;
