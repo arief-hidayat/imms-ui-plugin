@@ -16,7 +16,7 @@
     <div class="tab-content">
         <div id="list-section" class="tab-pane col-md-12"> %{--App.view.TableRegion--}%
             <div class="row buttons" style="margin-top: 10px">
-                <div class="col-md-4 col-centered">
+                <div class="col-md-4 col-xs-6 col-centered">
                     <bt:create/>
                     <bt:show/>
                     <bt:delete/>
