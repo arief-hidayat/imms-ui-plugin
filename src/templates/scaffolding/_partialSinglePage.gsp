@@ -15,8 +15,7 @@ ${"<% int tableWidth = grails.util.Holders.config.imms?.datatable?.singlepage?.w
     </div>
 
     <div id="detail-section" class="col-md-\${12 - tableWidth}">
-        <div class="row buttons" style="margin-top: 20px">
-        </div>
+
         <g:render template="partialCreate"/>
     </div>
 </div>
