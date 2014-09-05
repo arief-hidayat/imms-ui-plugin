@@ -19,7 +19,7 @@ class DefaultTableTagLib {
         String columns = buildHeaderColumns(attrs.key)
         sb.append "<table "
         if(attrs.id) sb.append "id='${attrs.id}'"
-        sb.append " class='${attrs.class ?: 'table table-striped table-bordered'}' cellspacing='0' width='${attrs.width ?: '100%'}'>"
+        sb.append " class='${attrs.class ?: 'table table-bordered'}' cellspacing='0' width='${attrs.width ?: '100%'}'>"
         sb.append("<thead>").append(columns).append("</thead>").append("<tfoot>").append(columns).append("</tfoot>").append("</table>")
         sb.toString()
     }
