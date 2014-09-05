@@ -4,7 +4,7 @@
 //
 //
 //= require app/settings
-//= require jquery
+//= require jquery/jquery-${org.codehaus.groovy.grails.plugins.jquery.JQueryConfig.SHIPPED_VERSION}.min
 //= require bootstrap-3.2.0.min
 //= require bootstrap-datetimepicker.min
 //= require_self

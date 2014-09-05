@@ -4,7 +4,7 @@
 //
 //
 //= require app/settings
-//= require jquery
+//= require jquery/jquery-${org.codehaus.groovy.grails.plugins.jquery.JQueryConfig.SHIPPED_VERSION}.min
 //= require bootstrap3-typeahead
 //= require imms.backbone.pack
 //= require_self

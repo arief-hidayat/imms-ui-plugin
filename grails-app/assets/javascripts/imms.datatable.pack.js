@@ -6,7 +6,7 @@
 // to create separate JavaScript files as needed.
 //
 //= require app/settings
-//= require jquery
+//= require jquery/jquery-${org.codehaus.groovy.grails.plugins.jquery.JQueryConfig.SHIPPED_VERSION}.min
 //= require dt/dataTables.ext
 //= require dataTables.bootstrap
 //= require imms.backbone.pack

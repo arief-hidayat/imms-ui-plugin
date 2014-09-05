@@ -54,6 +54,11 @@
         loadForm : function(url) {
             return function(eventData) {
                 App.logDebug("enter loadForm from url" + url);
+                var idAsParam = this.getIdAsParam(eventData);
+                if(idAsParam == undefined && url != this.urlCreateForm ) {
+                    App.logDebug("warning: no id found.");
+                    return;
+                }
                 this.getHtml(url, this.getIdAsParam(eventData), function( data ) {
                     if(this.form != null) { this.form.remove(); this.form = undefined; }
                     $(this.formEl).html(data); // note that 'append' only work for two tabs.
@@ -85,15 +90,19 @@
                         resetForm = true;
                     }
                 }
-                ajaxArray.push( this.postJSON(this.urlDeleteJSON, this.getIdAsParam(data, i)));
+                var idAsParam = this.getIdAsParam(data, i);
+                if(idAsParam != undefined) {
+                    ajaxArray.push( this.postJSON(this.urlDeleteJSON, idAsParam));
+                }
             }
-
-            $.when.apply(this, ajaxArray).done(function(){
-                App.logDebug("rebuild table ");
-                this.publishEvt("table:item:deleted", data.selectedRows);//TODO: onCreate... publish item:created
-                this.buildTable();
-            });
-            if(resetForm) this.resetForm();
+            if(ajaxArray.length > 0) {
+                $.when.apply(this, ajaxArray).done(function(){
+                    App.logDebug("rebuild table ");
+                    this.publishEvt("table:item:deleted", data.selectedRows);//TODO: onCreate... publish item:created
+                    this.buildTable();
+                });
+                if(resetForm) this.resetForm();
+            }
         },
         buildTable : function() {
             if(this.table == undefined) {
