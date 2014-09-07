@@ -202,7 +202,7 @@ class BsDatePickerTagLib {
         sb.append("[")
         for(int i=0;i<sp.length;i++) {
             String fieldNm = sp[i]
-            sb.append("'").append(fieldNm).append("'")
+            sb.append("\"").append(fieldNm).append("\"")
             if(i < sp.length -1) sb.append(",")
         }
         sb.append("]")

@@ -43,6 +43,7 @@
 
             this.minBoundaries = this.$el.data("after") || [];
             this.maxBoundaries = this.$el.data("before") || [];
+            App.logDebug("on minBoundaries " + this.minBoundaries);
 
             // listen to min/max boundaries
             _.each(this.minBoundaries, function(element){
@@ -50,7 +51,7 @@
                 this.subscribeEvt("dp.change:" + element, function(e) {
                     var date = e.date;
                     if(date == undefined || date == null) return;
-                    var currMinDate = this.picker.options.minDate; // a moment
+                    var currMinDate = this.picker.options ? this.picker.options.minDate : null; // a moment
                     if( currMinDate == undefined || currMinDate == null || currMinDate.isAfter(date)) {
                         this.picker.data("DateTimePicker").setMinDate(date);
                     }
@@ -61,7 +62,7 @@
                 this.subscribeEvt("dp.change:" + element, function(e) {
                     var date = e.date;
                     if(date == undefined || date == null) return;
-                    var currMaxDate = this.picker.options.maxDate; // a moment
+                    var currMaxDate = this.picker.options ? this.picker.options.maxDate : null; // a moment
                     if( currMaxDate == undefined || currMaxDate == null || currMaxDate.isBefore(date)) {
                         this.picker.data("DateTimePicker").setMaxDate(date);
                     }
