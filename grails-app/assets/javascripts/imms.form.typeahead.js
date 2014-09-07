@@ -67,15 +67,17 @@
             this.$el.attr('autocomplete', 'off');
             //http://stackoverflow.com/questions/14901535/bootstrap-typeahead-ajax-result-format-example/14959406#14959406
             //http://tatiyants.com/how-to-use-json-objects-with-twitter-bootstrap-typeahead/
-            if(this.$el.data("source")) {
-                this.$el.typeahead();
-            } else {
-                this.$el.typeahead({
+            var typeAheadOpt = {};
+            if(this.$el.data('items')) { typeAheadOpt.items = this.$el.data('items') }
+            if(this.$el.data('minlength')) { typeAheadOpt.minLength = this.$el.data('minlength') }
+            if(!this.$el.data("source")) {
+                $.extend(typeAheadOpt, {
                     isObjectItem : true, displayKey : this.displayKey, autoSelect : false,
-                    remoteUrl : this.$el.data("source-url") || App.url + "/typeAhead/" + this.key,
+                    remoteUrl : this.$el.data("sourceurl") || App.url + "/typeAhead/" + this.key,
                     remoteDefaultOpts : $.extend(opt.filter || {}, { max : 50})
-                });
+                })
             }
+            this.$el.typeahead(typeAheadOpt);
             if(opt.publishSearch) this.publishSearch = opt.publishSearch;
         },
         remove: function() {
