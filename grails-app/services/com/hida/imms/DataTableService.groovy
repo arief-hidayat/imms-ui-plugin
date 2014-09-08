@@ -9,6 +9,7 @@ import org.grails.datastore.mapping.query.api.Criteria
 @Transactional
 class DataTableService {
     def immsUiUtilService
+    private static final boolean ignoreCase = Holders.config.imms?.typeahead?.ignoreCase ?: false
 
     @Transactional(readOnly = true)
     DataTableResponse list(String key, DataTableRequest req, def additionalFilter= [:]) { // for simplicity, key is domainName
@@ -50,12 +51,15 @@ class DataTableService {
         Class domainClz = immsUiUtilService.getClassFromKey(key)?.clazz
         Criteria criteria = domainClz.createCriteria()
         def results = criteria.list(max : req.length, offset: req.start) { //PagedResultList
-            additionalFilter.each { String fieldFilter, String fieldValue -> eq(fieldFilter, getValue(fieldValue)) }
+            additionalFilter.each {
+                String fieldFilter, String fieldValue ->
+                    eq(fieldFilter, getValue(fieldValue), [ignoreCase: ignoreCase])
+            }
             for(DtReqOrder ord : req.orders)
                 order(req.columns.get(ord.column).data, ord.dir)
             for(DtReqColumn col : req.columns) {
                 if(col.search.value) {
-                    if(!col.search.regex) eq(col.data, getValue(col.search.value))
+                    if(!col.search.regex) eq(col.data, getValue(col.search.value), [ignoreCase: ignoreCase])
                     // no support for regex
                 }
             }
