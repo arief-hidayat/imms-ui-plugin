@@ -8,7 +8,8 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
 @Transactional
 class TypeAheadService {
 
-    def typeAheadConf = Holders.config.imms?.typeahead?.displayKey ?: [:]
+    private static final def typeAheadConf = Holders.config.imms?.typeahead?.displayKey ?: [:]
+    private static final boolean ignoreCase = Holders.config.imms?.typeahead?.ignoreCase ?: false
     def immsUiUtilService
 
 
@@ -27,10 +28,16 @@ class TypeAheadService {
 //                            if(!(k in ['max', 'controller', 'action', 'offset', 'query'])) {
                             if(v == null) isNull(k)
                             else if (v == "") isEmpty(k)
-                            else eq(k,getValue(v)) // only works for String, Long, and BigDecimal
+                            else {
+                                eq(k,getValue(v))
+                            } // only works for String, Long, and BigDecimal
                         }
                     }
-                    like((String) conf, query + "%")
+                    if(ignoreCase) {
+                        ilike((String) conf, query + "%")
+                    } else {
+                        like((String) conf, query + "%")
+                    }
                     if(params.max) maxResults(Integer.parseInt("${params.max}"))
                 }
             }
