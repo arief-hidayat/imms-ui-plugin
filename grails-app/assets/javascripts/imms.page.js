@@ -11,6 +11,18 @@
         table : null, form : null, manyToManyTables : null,
         events : {
         },
+        remove: function() {
+            this.removeForm().removeTable();
+            return App.View.prototype.remove.apply(this, arguments);
+        },
+        removeForm : function() {
+            if(this.form != null) { this.form.remove(); this.form = undefined; }
+            return this;
+        },
+        removeTable: function() {
+            if(this.table != null) { this.table.remove(); this.table = undefined; }
+            return this;
+        },
         otherInitialization : function(opt) {
             this.initialForm = opt.initialForm || {};
         },
@@ -60,7 +72,7 @@
                     return;
                 }
                 this.getHtml(url, this.getIdAsParam(eventData), function( data ) {
-                    if(this.form != null) { this.form.remove(); this.form = undefined; }
+                    this.removeForm();
                     $(this.formEl).html(data); // note that 'append' only work for two tabs.
                     this.buildForm();
                     this.showForm();
