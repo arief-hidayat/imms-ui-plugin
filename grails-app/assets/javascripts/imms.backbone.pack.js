@@ -11,7 +11,7 @@ var pubSub = _.extend({},Backbone.Events); //http://blog.safaribooksonline.com/2
 (function(Backbone, _, App){
     App.View = Backbone.View.extend({
         constructor: function(opt) {
-            this.key = opt.key;
+            this.key = opt.key || this.key;
             this.pubSub = opt.pubSub || window.pubSub;
             Backbone.View.apply(this,arguments);
         },
