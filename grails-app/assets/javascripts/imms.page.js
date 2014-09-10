@@ -8,7 +8,7 @@
 (function($, Backbone, _, moment, App){
     App.view.TableFormSinglePage = App.View.extend({
         el : '#content-section', tableEl : '#list-section', formEl : '#detail-section',
-        table : null, form : null, manyToManyTables : null,
+        table : null, form : null,
         events : {
         },
         remove: function() {
