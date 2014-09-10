@@ -153,6 +153,7 @@ class BsDatePickerTagLib {
         if(attrs.shouldBeAfter) sb.append("data-after='").append(toArrayString(attrs.shouldBeAfter)).append("' ")
         sb.append("data-field='").append(attrs.field).append("' ")
         if(attrs.shouldBeBefore) sb.append("data-before='").append(toArrayString(attrs.shouldBeBefore)).append("' ")
+        if(attrs.readonly) sb.append("data-readonly='").append(attrs.readonly).append("' ")
 
         if(attrs.id) sb.append "id='${attrs.id}' "
         sb.append(">").append("<input type='text' ").append("id='").append(attrs.field).append("' class='form-control' ")

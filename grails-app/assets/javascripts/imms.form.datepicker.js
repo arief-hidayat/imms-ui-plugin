@@ -68,6 +68,10 @@
                     }
                 });
             }, this);
+
+            if(this.$el.data('readonly') && this.$el.data('readonly') != "false") {
+                this.picker.data("DateTimePicker").disable();
+            }
         },
         onChangeDatePicker : function(e) {
             App.logDebug("onChangeDatePicker " + this.field);
