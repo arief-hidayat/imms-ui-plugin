@@ -179,14 +179,16 @@
             this.setupTypeAheadFields();
             this.setupManyToManyFields(false);
         },
-        setupDatePickerFields : function() {
-            _.each(this.$(".date"), function(elem){
+        setupDatePickerFields : function(parentEl) {
+            var $datePickers = parentEl == undefined ? this.$(".date") : this.$(parentEl + " .date");
+            _.each($datePickers, function(elem){
                 var dpEl = this.$el.selector + " #" + elem.id; // so datepicker element must have ID
                 this.datePickers.push(new App.view.DatePicker({ el : dpEl, pubSub : this.pubSub}));
             }, this);
         },
-        setupTypeAheadFields : function() {
-            _.each(this.$(".type-ahead"), function(elem){
+        setupTypeAheadFields : function(parentEl) {
+            var $typeAhead = parentEl == undefined ? this.$(".type-ahead") : this.$(parentEl + " .type-ahead");
+            _.each($typeAhead, function(elem){
                 var dpEl = this.$el.selector + " #" + elem.id; // so typeahead element must have ID
                 this.typeAheadFields.push(new App.view.TypeAhead({ el : dpEl, pubSub : this.pubSub}));
             }, this);
