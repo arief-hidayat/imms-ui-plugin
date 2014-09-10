@@ -87,7 +87,7 @@
             this.setValue(this.$hour, date.hour());
             this.setValue(this.$minute, date.minute());
         },
-        getDateFormat : function () { return this.isDatePicker() ? App.format.LocalDate : App.format.LocalDateTime },
+        getDateFormat : function () { return this.isDatePicker() ? App.format.LocalDate : (this.isTimePicker() ? App.format.LocalTime : App.format.LocalDateTime) },
         isTimePicker : function() { return this.type == "timePicker" },
         isDatePicker : function() { return this.type == "datePicker" },
         day : function() { return this.valueOf(this.$day) },

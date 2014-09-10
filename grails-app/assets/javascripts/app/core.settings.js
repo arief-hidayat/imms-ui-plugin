@@ -3,7 +3,7 @@ App.options = App.options || {
     language : "en"
 };
 App.format = App.format || {
-    LocalDate : "YYYY-MM-DD", LocalDateTime : "YYYY-MM-DD HH:mm"
+    LocalDate : "YYYY-MM-DD", LocalDateTime : "YYYY-MM-DD HH:mm", LocalTime : "HH:mm"
 };
 //ref jodatime.format.org.joda.time.LocalDate and http://momentjs.com/docs #format
 

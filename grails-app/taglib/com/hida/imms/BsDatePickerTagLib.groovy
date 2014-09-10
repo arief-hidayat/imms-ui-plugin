@@ -41,18 +41,32 @@ class BsDatePickerTagLib {
     def datePicker = {attrs ->
         log.debug '***** joda:datePicker *****'
         def fields = [DateTimeFieldType.year(), DateTimeFieldType.monthOfYear(), DateTimeFieldType.dayOfMonth()]
+        overrideDefaultAttrs(attrs)
         out << buildDatePicker(fields, attrs, "datePicker")
+    }
+
+    private static final def SHOW_VALUE_ON_EDIT = Holders.config.imms?.datepicker?.showValueOnEdit ?: false
+    private void overrideDefaultAttrs(attrs) {
+        //this is to display date value when it's not readonly.
+        if(SHOW_VALUE_ON_EDIT && !attrs.nojs) {
+            attrs.nojs = SHOW_VALUE_ON_EDIT
+        }
+        if(!attrs.'default') {
+            attrs.'default' = "none"
+        }
     }
 
     def timePicker = {attrs ->
         log.debug '***** joda:timePicker *****'
         def fields = [DateTimeFieldType.hourOfDay(), DateTimeFieldType.minuteOfHour(), DateTimeFieldType.secondOfMinute()]
 
+        overrideDefaultAttrs(attrs)
         out << buildDatePicker(fields, attrs, "timePicker")
     }
 
     def dateTimePicker = {attrs ->
         log.debug '***** joda:dateTimePicker *****'
+        overrideDefaultAttrs(attrs)
         def fields = [DateTimeFieldType.year(), DateTimeFieldType.monthOfYear(), DateTimeFieldType.dayOfMonth(), DateTimeFieldType.hourOfDay(), DateTimeFieldType.minuteOfHour(), DateTimeFieldType.secondOfMinute()]
         out << buildDatePicker(fields, attrs, "dateTimePicker")
     }
@@ -154,7 +168,7 @@ class BsDatePickerTagLib {
         sb.append("<span class='input-group-addon'><span class='glyphicon glyphicon-${icon}'></span></span>")
                 .append("</div>")
 
-        sb.append("<div id='").append("${attrs.field}-value'").append("'>")
+        sb.append("<div id='").append("${attrs.field}-value'").append(">")
         if (fields.contains(DateTimeFieldType.dayOfMonth())) {
             sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-day'").append(" name='").append("${attrs.field}_day'")
             if(attrs.value) sb.append(" value='").append(value?.dayOfMonth).append("'")
