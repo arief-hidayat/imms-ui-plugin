@@ -46,6 +46,7 @@ class BsTypeAheadTagLib {
             if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
             if(attrs.minLength)  sb.append("data-minlength='").append(attrs.minLength).append("' ")
             if(attrs.sourceUrl)  sb.append("data-sourceurl='").append(attrs.sourceUrl).append("' ")
+            if(attrs.publishEvt)  sb.append("data-publishevt='true' ")
             if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
             sb.append("placeholder='").append(attrs.placeholder ?: placeholder).append("'/>")
 //            sb.append("<div id='").append(field).append("-values'>")

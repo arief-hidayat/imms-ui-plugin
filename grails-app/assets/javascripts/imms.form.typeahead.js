@@ -45,7 +45,7 @@
             }
             if(item) {
                 this.onValidSelectedItem(item);
-                if(this.publishSearch) this.publishEvt("ta:search", item);
+                if(this.publishSearch) this.publishEvt("ta:search:" + this.field, item);
             }
         },
         onValidSelectedItem : function(item) {
@@ -78,6 +78,7 @@
                 })
             }
             this.$el.typeahead(typeAheadOpt);
+            if(this.$el.data("publishevt") == "true") this.publishSearch = true;
             if(opt.publishSearch) this.publishSearch = opt.publishSearch;
         },
         remove: function() {
