@@ -78,8 +78,14 @@
                 })
             }
             this.$el.typeahead(typeAheadOpt);
-            if(this.$el.data("publishevt") == "true") this.publishSearch = true;
-            if(opt.publishSearch) this.publishSearch = opt.publishSearch;
+            if(this.$el.data("publishevt")) {
+                App.logDebug(this.field + " is set to publish event.");
+                this.publishSearch = true;
+            }
+            if(opt.publishSearch) {
+                this.publishSearch = opt.publishSearch;
+                App.logDebug(this.field + " is set to publish event. override : " + this.publishSearch);
+            }
         },
         remove: function() {
             if(this.$el.data('typeahead')) {

@@ -61,6 +61,7 @@ class BsTypeAheadTagLib {
             if(displayKey) sb.append("data-display-key='").append(displayKey).append("' ")
             if(attrs.items)  sb.append("data-items='").append(attrs.items).append("' ")
             if(attrs.minLength)  sb.append("data-minLength='").append(attrs.minLength).append("' ")
+            if(attrs.publishEvt)  sb.append("data-publishevt='true' ")
             if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
             sb.append("placeholder='").append(attrs.placeholder ?: placeholder).append("'/>")
 
