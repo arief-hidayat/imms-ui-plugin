@@ -9,5 +9,6 @@
 *
 *= require imms.bootstrap.pack
 *= require imms.datatable.pack
+*= require imms.select2
 *= require_self
 */
