@@ -6,6 +6,7 @@
 //= require imms.datatable.pack
 //= require imms.form.typeahead
 //= require imms.form.datepicker
+//= require select2.min
 //= require_self
 
 (function($, Backbone, _, App){
@@ -107,12 +108,16 @@
     });
 
     App.view.ReadOnlyForm = App.View.extend({
-        manyToManyFields : [],
+        manyToManyFields : [], select2Els : [],
         events : {
             "submit form" : "ignoreSubmit",
             "click .buttons .btn" : "submitForm"
         },
         remove: function() {
+            _.each(this.select2Els, function(elem){
+                var $select2 = this.$(elem);
+                if($select2) $select2.select2("destroy");
+            }, this);
             return App.View.prototype.remove.apply(this, arguments);
         },
         ignoreSubmit : function() {
@@ -151,9 +156,17 @@
             this.setupManyToManyFields(true);
         },
         setupManyToManyFields : function(readOnly) {
+            //might be set as deprecated
             _.each(this.$(".many-to-many"), function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
                 this.manyToManyFields.push(new App.view.ManyToManyView({ el : mmEl, pubSub : this.pubSub, readOnly : readOnly}));
+            }, this);
+
+            _.each(this.$(".select2-simple"), function(elem){
+                var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
+                var $select2 = $(mmEl).select2();
+                if(readOnly) $select2.select2("readonly", true);
+                this.select2Els.push(mmEl);
             }, this);
         }
     });
@@ -171,7 +184,7 @@
                 view.remove()
             });
             _.each(this.typeAheadFields, function(view) { view.remove()});
-            return App.View.prototype.remove.apply(this, arguments);
+            return App.view.ReadOnlyForm.prototype.remove.apply(this, arguments);
         },
         initialize: function(opt) {
             this.formId = opt.formId;
