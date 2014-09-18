@@ -153,7 +153,17 @@
         },
         initialize: function(opt) {
             this.formId = opt.formId;
+            this.setupSelect2(true);
             this.setupManyToManyFields(true);
+        },
+        setupSelect2 : function(readOnly, parentEl) {
+            var $select2List = parentEl == undefined ? this.$(".select2-simple") : this.$(parentEl + " .select2-simpled");
+            _.each($select2List, function(elem){
+                var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
+                var $select2 = $(mmEl).select2();
+                if(readOnly) $select2.select2("readonly", true);
+                this.select2Els.push(mmEl);
+            }, this);
         },
         setupManyToManyFields : function(readOnly) {
             //might be set as deprecated
@@ -162,12 +172,6 @@
                 this.manyToManyFields.push(new App.view.ManyToManyView({ el : mmEl, pubSub : this.pubSub, readOnly : readOnly}));
             }, this);
 
-            _.each(this.$(".select2-simple"), function(elem){
-                var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
-                var $select2 = $(mmEl).select2();
-                if(readOnly) $select2.select2("readonly", true);
-                this.select2Els.push(mmEl);
-            }, this);
         }
     });
 
@@ -190,6 +194,7 @@
             this.formId = opt.formId;
             this.setupDatePickerFields();
             this.setupTypeAheadFields();
+            this.select2(false);
             this.setupManyToManyFields(false);
         },
         setupDatePickerFields : function(parentEl) {
