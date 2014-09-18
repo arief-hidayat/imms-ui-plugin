@@ -34,7 +34,7 @@ class BsTypeAheadTagLib {
     private StringBuilder buildTypeAheadDiv(def attrs) {
         StringBuilder sb = new StringBuilder()
         String parentInstance = attrs.parentInstance, domain = attrs.domain, displayKey = displayKeyConf[domain],
-                field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}",
+                field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}", fieldPrefix = attrs.fieldPrefix ?: "",
                 id = attrs.id ?: ( attrs.parentInstance ? "${parentInstance}-${field}" : field)
 
 
@@ -55,7 +55,7 @@ class BsTypeAheadTagLib {
         } else {
             def fields = attrs.fields ?: [:]
             if(!fields.containsKey(field) && attrs.value) fields.put(field, attrs.value)
-            sb.append("<input class='form-control type-ahead' id='").append(id).append("' data-field='").append(field).append("' ")
+            sb.append("<input class='form-control type-ahead' id='").append(id).append("' data-field='").append(fieldPrefix).append(field).append("' ")
             if(attrs.readonly) sb.append("readonly='readonly' ")
             sb.append("data-domain='").append(domain).append("' ")
             if(displayKey) sb.append("data-display-key='").append(displayKey).append("' ")
@@ -65,13 +65,14 @@ class BsTypeAheadTagLib {
             if(attrs.value) sb.append("value='").append(attrs.value).append("' ")
             sb.append("placeholder='").append(attrs.placeholder ?: placeholder).append("'/>")
 
-            sb.append("<div id='").append(field).append("-values'>")
+            sb.append("<div id='").append(fieldPrefix).append(field).append("-values'>")
+
             def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: [:]
             if(!populatedFieldsConf.containsKey(field) && displayKey) {
                 populatedFieldsConf.put(field, displayKey)
             }
             populatedFieldsConf.each { parentFieldNm, originalFieldNm ->
-                sb.append("<input type='hidden' name='").append(parentFieldNm).append("' data-field='").append(originalFieldNm).append("' ")
+                sb.append("<input type='hidden' name='").append(fieldPrefix).append(parentFieldNm).append("' data-field='").append(originalFieldNm).append("' ")
                 if(fields.containsKey(parentFieldNm)) sb.append("value='").append(fields[parentFieldNm]).append("' ")
                 sb.append(">")
             }
