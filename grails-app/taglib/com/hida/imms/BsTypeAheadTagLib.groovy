@@ -73,7 +73,7 @@ class BsTypeAheadTagLib {
             }
             populatedFieldsConf.each { parentFieldNm, originalFieldNm ->
                 sb.append("<input type='hidden' name='").append(fieldPrefix).append(parentFieldNm).append("' data-field='").append(originalFieldNm).append("' ")
-                if(fields.containsKey(parentFieldNm)) sb.append("value='").append(fields[parentFieldNm]).append("' ")
+                if(fields.containsKey(parentFieldNm) && fields[parentFieldNm]) sb.append("value='").append(fields[parentFieldNm]).append("' ")
                 sb.append(">")
             }
             sb.append("</div>")
