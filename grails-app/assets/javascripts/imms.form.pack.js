@@ -157,10 +157,42 @@
             this.setupManyToManyFields(true);
         },
         setupSelect2 : function(readOnly, parentEl) {
-            var $select2List = parentEl == undefined ? this.$(".select2-simple") : this.$(parentEl + " .select2-simpled");
-            _.each($select2List, function(elem){
+            var $select2Simples = parentEl == undefined ? this.$(".select2-simple") : this.$(parentEl + " .select2-simple");
+            _.each($select2Simples, function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
                 var $select2 = $(mmEl).select2();
+                if(readOnly) $select2.select2("readonly", true);
+                this.select2Els.push(mmEl);
+            }, this);
+            var $select2Remotes = parentEl == undefined ? this.$(".select2-remote") : this.$(parentEl + " .select2-remote");
+            _.each($select2Remotes, function(elem){
+                var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
+                var $mmEl = $(mmEl);
+                var domainId = $mmEl.data("id"), domainName = $mmEl.data("from"), initUrl = $mmEl.data("initurl"), dataType = $mmEl.data("datatype") || "json";
+                var formatResult = App.template.select2.formatResult[$mmEl.data("resulttmpl") || domainName] || function(state) { return state.text; };
+                var formatSelection = App.template.select2.formatResult[$mmEl.data("selectiontmpl")] || formatResult;
+                var select2Opts = {
+                    placeholder : $mmEl.data("placeholder") || "search item",
+                    minimumInputLength: 1,
+                    ajax : {
+                        url : App.url + "/typeAhead/" + domainName,
+                        dataType : dataType,
+                        data : function(term, page) { return { query: term } },
+                        results : function(data, page) {
+                            return { results : data };
+                        }
+                    },
+                    initSelection: function(element, callback) {
+                        if(domainId) {
+                            $.ajax(initUrl, {data : {id : id}, dataType: dataType}).done(function(data) { callback(data); });
+                        }
+                    },
+                    formatResult: formatResult, // omitted for brevity, see the source of this page
+                    formatSelection: formatSelection,  // omitted for brevity, see the source of this page
+                    dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+                    escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+                };
+                var $select2 = $mmEl.select2(select2Opts);
                 if(readOnly) $select2.select2("readonly", true);
                 this.select2Els.push(mmEl);
             }, this);

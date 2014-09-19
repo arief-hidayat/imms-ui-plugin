@@ -29,3 +29,6 @@ App.logDebug = function(msg) { window.console&&console.log(msg);};
 App.logErr = function(msg) { window.console&&console.error(msg);};
 
 App.template = {};
+
+App.template.select2  = {};
+App.template.select2.formatResult  = {};
