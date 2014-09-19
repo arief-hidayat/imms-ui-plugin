@@ -226,7 +226,7 @@
             this.formId = opt.formId;
             this.setupDatePickerFields();
             this.setupTypeAheadFields();
-            this.select2(false);
+            this.setupSelect2(false);
             this.setupManyToManyFields(false);
         },
         setupDatePickerFields : function(parentEl) {
