@@ -17,7 +17,7 @@
             "change" : "onSelect"
         },
         reset : function() { //TODO: test
-//            this.$el.data('typeahead').$menu.removeClass(".active");
+            App.logDebug("reset value on " + this.key);
             this.$el.removeData("selected-value");
             this.$el.val('').change();
             if(this.$values != undefined) {
@@ -85,6 +85,20 @@
             if(opt.publishSearch) {
                 this.publishSearch = opt.publishSearch;
                 App.logDebug(this.field + " is set to publish event. override : " + this.publishSearch);
+            }
+            this.$el.on('keyup', $.proxy(this.checkOnDelete, this)); // make sure it's reset.
+        },
+        checkOnDelete : function(e) {
+            switch(e.keyCode) {
+                case 8: // backspace
+                case 46: // delete
+                var $el = $(e.currentTarget);
+                    if($el.val() == "") {
+                        this.reset();
+                    }
+                break;
+                default:
+                break;
             }
         },
         remove: function() {
