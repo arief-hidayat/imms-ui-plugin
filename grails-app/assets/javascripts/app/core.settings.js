@@ -32,3 +32,4 @@ App.template = {};
 
 App.template.select2  = {};
 App.template.select2.formatResult  = {};
+App.template.select2.formatSelection  = {};

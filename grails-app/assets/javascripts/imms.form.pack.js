@@ -172,7 +172,8 @@
                 var $mmEl = $(mmEl);
                 var domainId = $mmEl.data("id"), domainName = $mmEl.data("from"), initUrl = $mmEl.data("initurl"), dataType = $mmEl.data("datatype") || "json";
                 var formatResult = App.template.select2.formatResult[$mmEl.data("resulttmpl") || domainName] || function(state) { return state.text; };
-                var formatSelection = App.template.select2.formatResult[$mmEl.data("selectiontmpl")] || formatResult;
+                var formatSelection = App.template.select2.formatSelection[$mmEl.data("selectiontmpl")] || formatResult;
+                var multiple = $mmEl.data("multiple") == "yes";
                 var select2Opts = {
                     placeholder : $mmEl.data("placeholder") || "search item",
                     minimumInputLength: 1,
@@ -184,6 +185,7 @@
                             return { results : data };
                         }
                     },
+                    multiple : multiple,
                     initSelection: function(element, callback) {
                         if(domainId) {
                             $.ajax(initUrl, {data : {id : id}, dataType: dataType}).done(function(data) { callback(data); });
