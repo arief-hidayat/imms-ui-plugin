@@ -161,7 +161,9 @@
             _.each($select2Simples, function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
                 var $select2 = $(mmEl).select2();
-                if(readOnly) $select2.select2("readonly", true);
+                if(readOnly) {
+                    $select2.select2("readonly", true);
+                }
                 this.select2Els.push(mmEl);
             }, this);
             var $select2Remotes = parentEl == undefined ? this.$(".select2-remote") : this.$(parentEl + " .select2-remote");
