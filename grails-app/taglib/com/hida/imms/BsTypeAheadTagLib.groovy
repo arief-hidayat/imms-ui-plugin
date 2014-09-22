@@ -35,7 +35,7 @@ class BsTypeAheadTagLib {
         StringBuilder sb = new StringBuilder()
         String parentInstance = attrs.parentInstance, domain = attrs.domain, displayKey = displayKeyConf[domain],
                 field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}", fieldPrefix = attrs.fieldPrefix ?: "",
-                id = attrs.id ?: ( attrs.parentInstance ? "${parentInstance}-${field}" : field)
+                id = attrs.id ?: ( attrs.parentInstance ? "${parentInstance}-${fieldPrefix}${field}" : field)
 
 
         if(!parentInstance) { // case without parentInstance and field
