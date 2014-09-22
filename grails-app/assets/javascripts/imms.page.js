@@ -63,20 +63,35 @@
             this.initTableActionListeners(opt);
             this.initFormActionListeners(opt);
         },
-        loadForm : function(url) {
+        loadForm : function(url, action) {
             return function(eventData) {
                 App.logDebug("enter loadForm from url" + url);
-                var idAsParam = this.getIdAsParam(eventData);
-                if(idAsParam == undefined && url != this.urlCreateForm ) {
-                    App.logDebug("warning: no id found.");
-                    return;
+                if(!action) {
+                    if(url == this.urlCreateForm) action = "create";
+                    else if(url == this.urlShowForm) action = "show";
+                    else if(url == this.urlEditForm) action = "edit";
                 }
-                this.getHtml(url, this.getIdAsParam(eventData), function( data ) {
-                    this.removeForm();
-                    $(this.formEl).html(data); // note that 'append' only work for two tabs.
-                    this.buildForm();
-                    this.showForm();
-                });
+                var buildFormParam = { action : action};
+                var idAsParam = this.getIdAsParam(eventData);
+                if(url != this.urlCreateForm) {
+                    if(idAsParam == undefined) {
+                        App.logDebug("warning: no id found.");
+                        return;
+                    } else {
+                        buildFormParam.id = idAsParam.id;
+                    }
+                }
+                var callback = (
+                    function(buildFormParam) {
+                        return function( data ) {
+                            this.removeForm();
+                            $(this.formEl).html(data); // note that 'append' only work for two tabs.
+                            this.buildForm(buildFormParam);
+                            this.showForm();
+                        }
+                    }
+                )(buildFormParam);
+                this.getHtml(url, idAsParam, callback);
             }
         },
         getIdAsParam:  function(eventData, idx) {
