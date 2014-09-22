@@ -117,6 +117,8 @@ class BsDatePickerTagLib {
         def precision = attrs.precision ?: (Holders.config.grails?.tags?.datePicker?.default?.precision ?: 'minute')
         log.debug "precision = $precision"
 
+        def fieldPrefix = attrs.fieldPrefix ?: ""
+
         log.debug "fields = $fields"
         switch (precision) {
             case 'year': fields.remove(DateTimeFieldType.monthOfYear())
@@ -151,12 +153,12 @@ class BsDatePickerTagLib {
         sb.append("<div class='form-group'>").append("<div class='input-group date' ")
         sb.append("data-type='").append(type).append("' ")
         if(attrs.shouldBeAfter) sb.append("data-after='").append(toArrayString(attrs.shouldBeAfter)).append("' ")
-        sb.append("data-field='").append(attrs.field).append("' ")
+        sb.append("data-field='").append(fieldPrefix).append(attrs.field).append("' ")
         if(attrs.shouldBeBefore) sb.append("data-before='").append(toArrayString(attrs.shouldBeBefore)).append("' ")
         if(attrs.readonly) sb.append("data-readonly='").append(attrs.readonly).append("' ")
 
         if(attrs.id) sb.append "id='${attrs.id}' "
-        sb.append(">").append("<input type='text' ").append("id='").append(attrs.field).append("' class='form-control' ")
+        sb.append(">").append("<input type='text' ").append("id='").append(fieldPrefix).append(attrs.field).append("' class='form-control' ")
 //        sb.append("' name='").append(attrs.field).append("'/>")
         if(attrs.readonly) {
             sb.append("readonly='readonly' ")
@@ -169,39 +171,39 @@ class BsDatePickerTagLib {
         sb.append("<span class='input-group-addon'><span class='glyphicon glyphicon-${icon}'></span></span>")
                 .append("</div>")
 
-        sb.append("<div id='").append("${attrs.field}-value'").append(">")
+        sb.append("<div id='").append("${fieldPrefix}${attrs.field}-value'").append(">")
         if (fields.contains(DateTimeFieldType.dayOfMonth())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-day'").append(" name='").append("${attrs.field}_day'")
+            sb.append("<input type='hidden' ").append("id='").append("${fieldPrefix}${attrs.field}-day'").append(" name='").append("${fieldPrefix}${attrs.field}_day'")
             if(attrs.value) sb.append(" value='").append(value?.dayOfMonth).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.monthOfYear())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-month'").append(" name='").append("${attrs.field}_month'")
+            sb.append("<input type='hidden' ").append("id='").append("${fieldPrefix}${attrs.field}-month'").append(" name='").append("${fieldPrefix}${attrs.field}_month'")
             if(attrs.value) sb.append(" value='").append(value?.monthOfYear).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.year())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-year'").append(" name='").append("${attrs.field}_year'")
+            sb.append("<input type='hidden' ").append("id='").append("${fieldPrefix}${attrs.field}-year'").append(" name='").append("${fieldPrefix}${attrs.field}_year'")
             if(attrs.value) sb.append(" value='").append(value?.year).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.hourOfDay())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-hour'").append(" name='").append("${attrs.field}_hour'")
+            sb.append("<input type='hidden' ").append("id='").append("${fieldPrefix}${attrs.field}-hour'").append(" name='").append("${fieldPrefix}${attrs.field}_hour'")
             if(attrs.value) sb.append(" value='").append(value?.hourOfDay).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.minuteOfHour())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-minute'").append(" name='").append("${attrs.field}_minute'")
+            sb.append("<input type='hidden' ").append("id='").append("${fieldPrefix}${attrs.field}-minute'").append(" name='").append("${fieldPrefix}${attrs.field}_minute'")
             if(attrs.value) sb.append(" value='").append(value?.minuteOfHour).append("'")
             sb.append("/>")
         }
 
         if (fields.contains(DateTimeFieldType.secondOfMinute())) {
-            sb.append("<input type='hidden' ").append("id='").append("${attrs.field}-second'").append(" name='").append("${attrs.field}_second'")
+            sb.append("<input type='hidden' ").append("id='").append("${fieldPrefix}${attrs.field}-second'").append(" name='").append("${fieldPrefix}${attrs.field}_second'")
             if(attrs.value) sb.append(" value='").append(value?.secondOfMinute).append("'")
             sb.append("/>")
         }
