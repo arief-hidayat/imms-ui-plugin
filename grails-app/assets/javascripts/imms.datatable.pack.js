@@ -16,7 +16,7 @@
 
     App.dataTableOptions = function($root, key, enableRowCallback, customUrl) { // key is domainName e.g. asset, but it might be customized i.e. workOrder/closed
             var tableConf = App.dt.config.table[key] || {};
-        var customUrlConf = App.dt.config.customUrl[key] || customUrl || {};
+        var customUrlConf = customUrl || {};
 
         var pipelineOpt = { url : App.url + "/dataTable/" + key};
         if(customUrlConf != undefined) {
@@ -64,11 +64,12 @@
             this.indexOfSelectedId = opt.indexOfSelectedId || this.indexOfSelectedId;
 
             this.pk = opt.pk || this.pk;
+            this.customUrl = opt.customUrl || this.getCustomUrl();
 
             this.setSelectedRows(opt.selectedRows || []);
 
             this.otherInitialization(opt);
-            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow(), this.getCustomUrl())); // true, enable row callback.
+            this.$el.dataTable( App.dataTableOptions(this.$el, this.key, this.canSelectRow(), this.customUrl)); // true, enable row callback.
             this.subscribeEvt("table:row:select", function(data){
                 App.logDebug("select key " + data.key + ", id " + data.rowId);
             });
@@ -178,10 +179,10 @@
             "click .buttons .btn": "clickButton"
         },
         otherInitialization : function(opt) {
-
         },
         initialize: function(opt) {
             App.logDebug("init...TableRegion");
+            this.customUrl = opt.customUrl;
             this.otherInitialization(opt);
             this.initView(opt);
         },
@@ -217,7 +218,7 @@
             if(this.tableView != null) {
                 this.tableView.remove(); this.tableView = undefined;
             }
-            this.tableView = new App.view.Table({el: this.$(".table"), key: this.key, pubSub : this.pubSub, selectedRows : selectedRows});
+            this.tableView = new App.view.Table({el: this.$(".table"), key: this.key, pubSub : this.pubSub, selectedRows : selectedRows, customUrl : this.customUrl});
         },
         remove: function() {
             if(this.tableView != null) {

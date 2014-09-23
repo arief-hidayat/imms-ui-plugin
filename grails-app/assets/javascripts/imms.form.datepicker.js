@@ -1,8 +1,8 @@
 // bootstrap 3.1.1
+//
+//
 // + datetimepicker 3.0.0 https://github.com/Eonasdan/bootstrap-datetimepicker http://eonasdan.github.io/bootstrap-datetimepicker
 // + typeahead https://github.com/bassjobsen/Bootstrap-3-Typeahead
-//
-//
 //= require app/settings
 //= require moment.min
 //= require imms.bootstrap.pack

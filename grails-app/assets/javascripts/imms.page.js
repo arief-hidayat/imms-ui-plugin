@@ -25,6 +25,7 @@
         },
         otherInitialization : function(opt) {
             this.initialForm = opt.initialForm || {};
+            this.tableCustomUrl = opt.tableCustomUrl;
         },
         initTableActionListeners : function(opt) {
             var urlController = this.key.charAt(0).toLowerCase() + this.key.substr(1);
@@ -134,7 +135,7 @@
         },
         buildTable : function() {
             if(this.table == undefined) {
-                this.table = new App.view.TableRegion( {el: this.tableEl, key: this.key, pubSub: this.pubSub} );
+                this.table = new App.view.TableRegion( {el: this.tableEl, key: this.key, pubSub: this.pubSub, customUrl : this.tableCustomUrl} );
             }
             else this.table.reloadTable();
         },
