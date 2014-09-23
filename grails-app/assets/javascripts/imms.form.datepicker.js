@@ -13,6 +13,7 @@
     App.view.DatePicker = App.View.extend({
         type : null, field : null,
         events : {
+            "dp.show" : "onChangeDatePicker", // make sure default value is set.
             "dp.change" : "onChangeDatePicker"
         },
         initialize: function(opt) {
@@ -75,8 +76,10 @@
         },
         onChangeDatePicker : function(e) {
             App.logDebug("onChangeDatePicker " + this.field);
-            this.setDateValue(e.date);
-            this.publishEvt("dp.change:" + this.field, e);
+            if(e.date) {
+                this.setDateValue(e.date);
+                this.publishEvt("dp.change:" + this.field, e);
+            }
         },
         getDateValue : function() {  return this.hasValue() ? new Date(this.year(), this.month(), this.day(), this.hour(), this.minute(), 0) : null},
         setDateValue : function(date) {
