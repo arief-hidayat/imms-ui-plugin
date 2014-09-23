@@ -31,6 +31,8 @@
             this.$el.data("date-format", this.getDateFormat());
             this.picker = this.$el.datetimepicker(timePickerOpts);
 
+            this.$el.on('keyup', $.proxy(this.checkOnDelete, this)); // make sure it's reset.
+
             // TODO: set date, if any
             var initDate = this.getDateValue();
             if(initDate != null) {
@@ -73,6 +75,27 @@
             if(this.$el.data('readonly') && this.$el.data('readonly') != "false") {
                 this.picker.data("DateTimePicker").disable();
             }
+        },
+        checkOnDelete : function(e) {
+            switch(e.keyCode) {
+                case 8: // backspace
+                case 46: // delete
+                    var $el = $(e.currentTarget);
+                    if($el.val() == "") {
+                        this.reset();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        },
+        reset : function() { //TODO: test
+            this.setValue(this.$year, undefined);
+            this.setValue(this.$month, undefined);
+            this.setValue(this.$day, undefined);
+            this.setValue(this.$hour, undefined);
+            this.setValue(this.$minute, undefined);
+            // do we need to set the picker's date value as we?
         },
         onChangeDatePicker : function(e) {
             App.logDebug("onChangeDatePicker " + this.field);
