@@ -77,7 +77,7 @@ class ${className}Controller {
 
         if (${propertyName}.hasErrors()) {
             if(params._partial) {
-                response.status = PRECONDITION_FAILED
+                response.status = PRECONDITION_FAILED.value()
                 render(model: [${propertyName}: ${propertyName}], view: "_partialCreate")
                 return
             }
@@ -96,7 +96,7 @@ class ${className}Controller {
             }
         } catch(Exception e) {
             if(params._partial) {
-                response.status = INTERNAL_SERVER_ERROR
+                response.status = INTERNAL_SERVER_ERROR.value()
                 if (!${propertyName}.hasErrors()) {
                     flash.error = e.getMessage()
                 }
@@ -131,7 +131,7 @@ class ${className}Controller {
 
         if (${propertyName}.hasErrors()) {
             if(params._partial) {
-                response.status = PRECONDITION_FAILED
+                response.status = PRECONDITION_FAILED.value()
                 render(model: [${propertyName}: ${propertyName}], view: "_partialEdit")
                 return
             }
@@ -147,7 +147,7 @@ class ${className}Controller {
             }
         } catch(Exception e) {
             if(params._partial) {
-                response.status = INTERNAL_SERVER_ERROR
+                response.status = INTERNAL_SERVER_ERROR.value()
                 if (!${propertyName}.hasErrors()) {
                     flash.error = e.getMessage()
                 }
@@ -182,7 +182,7 @@ class ${className}Controller {
             }
         } catch(Exception e) {
             if(params._partial) {
-                response.status = INTERNAL_SERVER_ERROR
+                response.status = INTERNAL_SERVER_ERROR.value()
                 if (!${propertyName}.hasErrors()) {
                     flash.error = e.getMessage()
                 }
