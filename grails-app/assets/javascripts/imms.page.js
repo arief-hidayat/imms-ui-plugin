@@ -54,7 +54,7 @@
             this.subscribeEvt("form:action:update", this.onUpdateForm);
             for(var customAction in this.otherFormActions) {
                 if(this.otherFormActions.hasOwnProperty(customAction)) {
-                    this.subscribeEvt("table:action:" + customAction, this.otherFormActions[customAction]);
+                    this.subscribeEvt("form:action:" + customAction, this.otherFormActions[customAction]);
                 }
             }
         },
