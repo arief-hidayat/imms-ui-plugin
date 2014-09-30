@@ -127,6 +127,7 @@
         submitForm : function(evt) {
             var $btn = $(evt.currentTarget);
             var form = this.serializeForm();
+            if($btn.data("flag")) form._flag = $btn.data("flag");
             var actionUrl = $btn.data("url") || form.action;
             App.logDebug("actionUrl " + actionUrl +", action " + $btn.data("action"));
             if($btn.data("action") && actionUrl) { // not yet tested, must alter the UI
