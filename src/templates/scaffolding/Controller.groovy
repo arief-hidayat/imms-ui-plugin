@@ -98,7 +98,7 @@ class ${className}Controller {
             if(params._partial) {
                 response.status = INTERNAL_SERVER_ERROR
                 if (!${propertyName}.hasErrors()) {
-                    flash.message = e.getMessage()
+                    flash.error = e.getMessage()
                 }
                 render(model: [${propertyName}: ${propertyName}], view: "_message")
                 return
@@ -107,7 +107,7 @@ class ${className}Controller {
 
         request.withFormat {
             form multipartForm {
-                flash.message = msg
+                flash.info = msg
                 redirect ${propertyName}
             }
             '*' { respond ${propertyName}, [status: CREATED] }
@@ -149,7 +149,7 @@ class ${className}Controller {
             if(params._partial) {
                 response.status = INTERNAL_SERVER_ERROR
                 if (!${propertyName}.hasErrors()) {
-                    flash.message = e.getMessage()
+                    flash.error = e.getMessage()
                 }
                 render(model: [${propertyName}: ${propertyName}], view: "_message")
                 return
@@ -158,7 +158,7 @@ class ${className}Controller {
 
         request.withFormat {
             form multipartForm {
-                flash.message = msg
+                flash.info = msg
                 redirect ${propertyName}
             }
             '*'{ respond ${propertyName}, [status: OK] }
@@ -184,7 +184,7 @@ class ${className}Controller {
             if(params._partial) {
                 response.status = INTERNAL_SERVER_ERROR
                 if (!${propertyName}.hasErrors()) {
-                    flash.message = e.getMessage()
+                    flash.error = e.getMessage()
                 }
                 render(model: [${propertyName}: ${propertyName}], view: "_message")
                 return
@@ -192,7 +192,7 @@ class ${className}Controller {
         }
         request.withFormat {
             form multipartForm {
-                flash.message = msg
+                flash.info = msg
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -207,7 +207,7 @@ class ${className}Controller {
         }
         request.withFormat {
             form multipartForm {
-                flash.message = msg
+                flash.error = msg
                 redirect action: "index", method: "GET"
             }
             '*'{ render status: NOT_FOUND }
