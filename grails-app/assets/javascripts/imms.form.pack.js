@@ -188,8 +188,10 @@
                     },
                     multiple : multiple,
                     initSelection: function(element, callback) {
+                        App.logDebug("initSelection , domainId " + domainId);
                         if(domainId) {
-                            $.ajax(initUrl, {data : {id : id}, dataType: dataType}).done(function(data) { callback(data); });
+                            App.logDebug("init debug. call " + initUrl);
+                            $.ajax(initUrl, {data : {id : domainId}, dataType: dataType}).done(function(data) { callback(data); });
                         }
                     },
                     formatResult: formatResult, // omitted for brevity, see the source of this page
@@ -197,8 +199,13 @@
                     dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
                     escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
                 };
+                App.logDebug("select2 remote setup for "+ mmEl + ", initulrl:" + initUrl + ", domainId : "+ domainId);
                 var $select2 = $mmEl.select2(select2Opts);
-                if(readOnly) $select2.select2("readonly", true);
+                App.logDebug("done setup select2 ");
+                if(readOnly || $mmEl.data("readonly")) {
+                    App.logDebug("make select2 readonly ");
+                    $select2.select2("readonly", true);
+                }
                 this.select2Els.push(mmEl);
             }, this);
         },
