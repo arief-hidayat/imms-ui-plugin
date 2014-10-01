@@ -75,7 +75,7 @@
                 var buildFormParam = { action : action};
                 var idAsParam = this.getIdAsParam(eventData);
                 if(url != this.urlCreateForm) {
-                    if(idAsParam == undefined) {
+                    if(idAsParam == undefined || idAsParam.id == undefined) {
                         App.logDebug("warning: no id found.");
                         return;
                     } else {
