@@ -145,7 +145,16 @@
                 formData = {}
                 ;
             _($form.serializeArray()).each(function (nvp) {
-                formData[nvp.name] = nvp.value;
+                if(formData[nvp.name]) {
+                    if(!$.isArray(formData[nvp.name])) {
+                        var firstItem = formData[nvp.name];
+                        formData[nvp.name] = [];
+                        formData[nvp.name].push(firstItem);
+                    }
+                    formData[nvp.name].push(nvp.value);
+                } else {
+                    formData[nvp.name] = nvp.value;
+                }
             });
             if(!formData.action) {
                 formData.action = $form.attr('action');
@@ -187,21 +196,31 @@
                         }
                     },
                     multiple : multiple,
-                    initSelection: function(element, callback) {
-                        App.logDebug("initSelection , domainId " + domainId);
-                        if(domainId) {
-                            App.logDebug("init debug. call " + initUrl);
-                            $.ajax(initUrl, {data : {id : domainId}, dataType: dataType}).done(function(data) { callback(data); });
-                        }
-                    },
                     formatResult: formatResult, // omitted for brevity, see the source of this page
                     formatSelection: formatSelection,  // omitted for brevity, see the source of this page
                     dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
                     escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
                 };
+                if(!multiple) {
+                    select2Opts.initSelection = function(element, callback) {
+                        App.logDebug("initSelection , domainId " + domainId);
+                        if(domainId) {
+                            App.logDebug("init debug. call " + initUrl);
+                            $.ajax(initUrl, {data : {id : domainId}, dataType: dataType}).done(function(data) { callback(data); });
+                        }
+                    }
+                }
                 App.logDebug("select2 remote setup for "+ mmEl + ", initulrl:" + initUrl + ", domainId : "+ domainId);
                 var $select2 = $mmEl.select2(select2Opts);
-                App.logDebug("done setup select2 ");
+                if(multiple && domainId) {
+                    var renderDataCallback = (function($mmEl){
+                        return function(data) {
+                            $mmEl.select2("data", data);
+                        };
+                    })($mmEl);
+                    App.logDebug("load initial data");
+                    $.ajax(initUrl, {data : {id : domainId}, dataType: dataType}).done(renderDataCallback);
+                }
                 if(readOnly || $mmEl.data("readonly")) {
                     App.logDebug("make select2 readonly ");
                     $select2.select2("readonly", true);
