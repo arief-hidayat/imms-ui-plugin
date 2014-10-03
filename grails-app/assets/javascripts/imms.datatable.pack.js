@@ -58,7 +58,7 @@
         otherInitialization : function(opt) {
         },
         initialize: function(opt) {
-            App.logDebug("init...Table");
+//            App.logDebug("init...Table");
             this.selectionMode = opt.selectionMode || "single";
             this.getRowId = opt.getRowId || this.getRowId;
             this.indexOfSelectedId = opt.indexOfSelectedId || this.indexOfSelectedId;
@@ -116,7 +116,7 @@
             return $.inArray(id, selected);
         },
         remove: function() {
-            App.logDebug("destroy table");
+//            App.logDebug("destroy table");
             this.$el.DataTable().destroy();
             return App.View.prototype.remove.apply(this, arguments);
         },
@@ -181,7 +181,7 @@
         otherInitialization : function(opt) {
         },
         initialize: function(opt) {
-            App.logDebug("init...TableRegion");
+//            App.logDebug("init...TableRegion");
             this.customUrl = opt.customUrl;
             this.otherInitialization(opt);
             this.initView(opt);
