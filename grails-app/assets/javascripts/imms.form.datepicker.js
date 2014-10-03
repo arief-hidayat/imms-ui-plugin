@@ -36,7 +36,7 @@
             // TODO: set date, if any
             var initDate = this.getDateValue();
             if(initDate != null) {
-                App.logDebug(this.field + ". set init date. " + initDate);
+//                App.logDebug(this.field + ". set init date. " + initDate);
 
                 this.picker.data("DateTimePicker").setDate(initDate);
             }
@@ -46,7 +46,7 @@
 
             this.minBoundaries = this.$el.data("after") || [];
             this.maxBoundaries = this.$el.data("before") || [];
-            App.logDebug("on minBoundaries " + this.minBoundaries);
+//            App.logDebug("on minBoundaries " + this.minBoundaries);
 
             // listen to min/max boundaries
             _.each(this.minBoundaries, function(element){
