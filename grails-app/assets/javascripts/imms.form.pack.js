@@ -271,7 +271,7 @@
             var $typeAhead = parentEl == undefined ? this.$(".type-ahead") : this.$(parentEl + " .type-ahead");
             _.each($typeAhead, function(elem){
                 var dpEl = this.$el.selector + " #" + elem.id; // so typeahead element must have ID
-                App.logDebug("setup type ahead dpEl:"+ dpEl);
+//                App.logDebug("setup type ahead dpEl:"+ dpEl);
                 this.typeAheadFields.push(new App.view.TypeAhead({ el : dpEl, pubSub : this.pubSub}));
             }, this);
         }
