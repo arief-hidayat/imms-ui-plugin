@@ -121,11 +121,23 @@
             return App.View.prototype.remove.apply(this, arguments);
         },
         ignoreSubmit : function() {
+            var $btn = this.$(".buttons .btn:focus");
+            if($btn && $btn.data("nojs")) {
+                return true;
+            }
             App.logDebug("ignoreSubmit");
             return false;
         },
         submitForm : function(evt) {
             var $btn = $(evt.currentTarget);
+            if($btn.data("nojs")) {
+                var $form = $btn.closest("form");
+                if($btn.data("url")) {
+                    $form.attr("action", $btn.data("url"));
+                }
+                $form.submit();
+                return false;
+            }
             var form = this.serializeForm();
             if($btn.data("flag")) form._flag = $btn.data("flag");
             var actionUrl = $btn.data("url") || form.action;
