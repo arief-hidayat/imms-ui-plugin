@@ -177,6 +177,11 @@
             this.formId = opt.formId;
             this.setupSelect2(true);
             this.setupManyToManyFields(true);
+
+            var $msgCntr = this.$(".message-container");
+            if($msgCntr) {
+                $msgCntr.focus();
+            }
         },
         setupSelect2 : function(readOnly, parentEl) {
             var $select2Simples = parentEl == undefined ? this.$(".select2-simple") : this.$(parentEl + " .select2-simple");
