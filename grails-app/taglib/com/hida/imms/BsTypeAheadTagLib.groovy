@@ -33,7 +33,7 @@ class BsTypeAheadTagLib {
 
     private StringBuilder buildTypeAheadDiv(def attrs) {
         StringBuilder sb = new StringBuilder()
-        String parentInstance = attrs.parentInstance, domain = attrs.domain, displayKey = displayKeyConf[domain],
+        String parentInstance = attrs.parentInstance, domain = attrs.domain, displayKey = attrs.displayKey ?: displayKeyConf[domain],
                 field = attrs.field ?: "${domain.substring(0,1).toLowerCase()}${domain.substring(1)}", fieldPrefix = attrs.fieldPrefix ?: "",
                 id = attrs.id ?: ( attrs.parentInstance ? "${parentInstance}-${fieldPrefix}${field}" : field)
 
@@ -74,13 +74,15 @@ class BsTypeAheadTagLib {
 
             sb.append("<div id='").append(fieldPrefix).append(field).append("-values'>")
 
-            def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: [:]
+            def populatedFieldsConf = Holders.config.imms?.typeahead?.populatedFields?."${parentInstance}"?."${field}" ?: ( attrs.populatedFieldsConf ?: [:])
             if(!populatedFieldsConf.containsKey(field) && displayKey) {
                 populatedFieldsConf.put(field, displayKey)
             }
             populatedFieldsConf.each { parentFieldNm, originalFieldNm ->
                 sb.append("<input type='hidden' name='").append(fieldPrefix).append(parentFieldNm).append("' data-field='").append(originalFieldNm).append("' ")
-                if(fields.containsKey(parentFieldNm) && fields[parentFieldNm]) sb.append("value='").append(fields[parentFieldNm]).append("' ")
+                if(fields.containsKey(parentFieldNm) && fields[parentFieldNm]) {
+                    sb.append("value='").append(fields[parentFieldNm]).append("' ")
+                }
                 sb.append(">")
             }
             sb.append("</div>")
