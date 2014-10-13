@@ -137,6 +137,7 @@
                     $form.attr("action", $btn.data("url"));
                 }
                 $form.submit();
+                $btn.removeAttr('disabled');
                 return false;
             }
             var form = this.serializeForm();
