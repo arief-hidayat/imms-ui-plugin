@@ -130,6 +130,7 @@
         },
         submitForm : function(evt) {
             var $btn = $(evt.currentTarget);
+            $btn.attr('disabled','disabled');
             if($btn.data("nojs")) {
                 var $form = $btn.closest("form");
                 if($btn.data("url")) {
@@ -149,7 +150,7 @@
             } else {
                 App.logErr("Must set data-action and/or data-url in the button ");
             }
-
+            $btn.removeAttr('disabled');
             return false;
         },
         serializeForm : function(form) {
