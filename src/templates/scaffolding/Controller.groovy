@@ -12,7 +12,6 @@ class ${className}Controller {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def createForm() {
-        println "inside create form"
         render(model: [${propertyName}: new ${className}(params)], view: "_partialCreate")
     }
     def editForm(${className} ${propertyName}) {
