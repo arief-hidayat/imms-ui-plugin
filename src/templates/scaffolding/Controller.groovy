@@ -177,7 +177,7 @@ class ${className}Controller {
             ${propertyName}.delete flush:true
             flash.info = msg
             if(params._partial) {
-                render(model: [${propertyName}: ${propertyName}], view: "_partialCreate")
+                render(model: [${propertyName}: new ${className}(params)], view: "_partialCreate")
                 return
             }
         } catch(Exception e) {
