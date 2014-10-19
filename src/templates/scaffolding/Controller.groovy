@@ -31,11 +31,11 @@ class ${className}Controller {
         }
         try {
             ${propertyName}.delete flush: true
-            renderJsonMessage(message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id]), params, OK)
+            renderJsonMessage(message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), displayText(${propertyName})]), params, OK)
             println "deleted successfully"
         } catch(Exception e) {
             log.error("Failed to delete ${className}. params \${params}", e)
-            renderJsonMessage(message(code: 'default.not.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id]), params, INTERNAL_SERVER_ERROR)
+            renderJsonMessage(message(code: 'default.not.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), displayText(${propertyName})]), params, INTERNAL_SERVER_ERROR)
             println "item couldn't be deleted"
         }
     }
@@ -86,7 +86,7 @@ class ${className}Controller {
 
 
 
-        String msg = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.id])
+        String msg = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), displayText(${propertyName})])
         try {
             ${propertyName}.save flush:true, failOnError: true
             if(params._partial) {
@@ -137,7 +137,7 @@ class ${className}Controller {
             respond ${propertyName}.errors, view:'edit'
             return
         }
-        String msg = message(code: 'default.updated.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+        String msg = message(code: 'default.updated.message', args: [message(code: '${className}.label', default: '${className}'), displayText(${propertyName})])
         try {
             ${propertyName}.save flush:true, failOnError: true
             if(params._partial) {
@@ -172,7 +172,7 @@ class ${className}Controller {
             return
         }
 
-        String msg = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), ${propertyName}.id])
+        String msg = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), displayText(${propertyName})])
         try {
             ${propertyName}.delete flush:true
             if(params._partial) {
@@ -211,5 +211,9 @@ class ${className}Controller {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    protected String displayText(def instance) {
+        "\${instance}"
     }
 }
