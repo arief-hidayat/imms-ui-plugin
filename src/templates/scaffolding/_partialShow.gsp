@@ -1,7 +1,5 @@
 <div class="row message-container" style="margin-left: 0px">
-    <g:if test="\${flash.message}">
-        <div class="message" role="status">\${flash.message}</div>
-    </g:if>
+    <dm:messageFromFlash flash="\${flash}"/>
 </div>
 <div class="row" style="margin-left: 0px">
     <g:form url="[resource:${propertyName}, action:'delete']" method="DELETE">

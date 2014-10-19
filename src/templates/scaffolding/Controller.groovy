@@ -89,6 +89,7 @@ class ${className}Controller {
         String msg = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), displayText(${propertyName})])
         try {
             ${propertyName}.save flush:true, failOnError: true
+            flash.info = msg
             if(params._partial) {
                 render(model: [${propertyName}: ${propertyName}], view: "_partialShow")
                 return
@@ -106,7 +107,6 @@ class ${className}Controller {
 
         request.withFormat {
             form multipartForm {
-                flash.info = msg
                 redirect ${propertyName}
             }
             '*' { respond ${propertyName}, [status: CREATED] }
@@ -140,6 +140,7 @@ class ${className}Controller {
         String msg = message(code: 'default.updated.message', args: [message(code: '${className}.label', default: '${className}'), displayText(${propertyName})])
         try {
             ${propertyName}.save flush:true, failOnError: true
+            flash.info = msg
             if(params._partial) {
                 render(model: [${propertyName}: ${propertyName}], view: "_partialShow")
                 return
@@ -157,7 +158,6 @@ class ${className}Controller {
 
         request.withFormat {
             form multipartForm {
-                flash.info = msg
                 redirect ${propertyName}
             }
             '*'{ respond ${propertyName}, [status: OK] }
@@ -175,6 +175,7 @@ class ${className}Controller {
         String msg = message(code: 'default.deleted.message', args: [message(code: '${className}.label', default: '${className}'), displayText(${propertyName})])
         try {
             ${propertyName}.delete flush:true
+            flash.info = msg
             if(params._partial) {
                 render(model: [${propertyName}: ${propertyName}], view: "_partialCreate")
                 return
@@ -191,7 +192,6 @@ class ${className}Controller {
         }
         request.withFormat {
             form multipartForm {
-                flash.info = msg
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
