@@ -296,5 +296,35 @@
         }
     });
 
+
+    App.view.EditableFormWithEmbeddedTable = App.view.EditableForm.extend({
+        addEmbeddedTableRow : function(tablePrefix, relativeUrl) { // #labors
+            var $table = this.$(tablePrefix + "-table");
+            var i = $table.find("tbody tr").length - 1;
+            var newRowEl = tablePrefix + i; // this should match _shift.gsp
+            var $lastRow = $table.find("tbody tr:eq("+ i +")");
+            App.logDebug("add "+ tablePrefix + " row "+ i);
+            this.getHtml(App.url + relativeUrl, {i : i}, function(row) {
+                $lastRow.before(row);
+                this.setupTypeAheadFields(newRowEl);
+                this.setupDatePickerFields(newRowEl);
+                this.setupSelect2(false, newRowEl);
+            } );
+        },
+        deleteRow : function(e) {
+            App.logDebug(" delete row ");
+            $(e.currentTarget).closest("tr").remove();
+        },
+        getHtml : function(url, option, callback) {
+            return $.ajax({
+                type: "GET",
+                url: url,
+                data: option || {},
+                success: callback || function(){},
+                context : this // make sure this BB view is the context
+            });
+        }
+    });
+
 })(jQuery, Backbone, _, App);
 
