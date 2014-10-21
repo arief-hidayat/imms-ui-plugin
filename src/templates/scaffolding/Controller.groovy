@@ -197,7 +197,6 @@ class ${className}Controller {
             '*'{ render status: NO_CONTENT }
         }
     }
-
     protected void notFound() {
         String msg = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
         if(params._partial) {
@@ -214,6 +213,7 @@ class ${className}Controller {
     }
 
     protected String displayText(def instance) {
-        "\${instance}"
+        return "\${instance}"
     }
+
 }
