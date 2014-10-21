@@ -26,17 +26,17 @@ class ${className}Controller {
         ${className} ${propertyName} = ${className}.get(params.id)
         if(${propertyName} == null) {
             renderJsonMessage(message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id]), params, NOT_FOUND)
-            println "item not found"
+
             return
         }
         try {
             ${propertyName}.delete flush: true
             renderJsonMessage(message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), displayText(${propertyName})]), params, OK)
-            println "deleted successfully"
+
         } catch(Exception e) {
             log.error("Failed to delete ${className}. params \${params}", e)
             renderJsonMessage(message(code: 'default.not.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), displayText(${propertyName})]), params, INTERNAL_SERVER_ERROR)
-            println "item couldn't be deleted"
+
         }
     }
 
