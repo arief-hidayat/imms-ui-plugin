@@ -109,10 +109,8 @@
             App.logDebug("setDateValue: " + date);
 //            var theDate = _.isDate(date) ? moment(date) :
 //                moment(date, this.getDateFormat());
-            App.logDebug("theDate year: " + date.year());
             this.setValue(this.$year, date.year());
-            App.logDebug("$year : " + this.$year.val());
-            this.setValue(this.$month, date.month());
+            this.setValue(this.$month, date.month() ? (date.month() + 1) : date.month());
             this.setValue(this.$day, date.date());
             this.setValue(this.$hour, date.hour());
             this.setValue(this.$minute, date.minute());
@@ -121,7 +119,11 @@
         isTimePicker : function() { return this.type == "timePicker" },
         isDatePicker : function() { return this.type == "datePicker" },
         day : function() { return this.valueOf(this.$day) },
-        month : function() { return this.valueOf(this.$month) },
+        month : function() {
+            var val = this.valueOf(this.$month);
+            if(val > 0) val = val - 1;
+            return val;
+        },
         year : function() { return this.valueOf(this.$year) },
         hour : function() { return this.valueOf(this.$hour) },
         minute : function() { return this.valueOf(this.$minute) },
