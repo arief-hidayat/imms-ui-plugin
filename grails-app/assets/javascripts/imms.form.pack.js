@@ -158,7 +158,7 @@
             var $form = form ? $(form) : this.$("form:first"),
                 formData = {}
                 ;
-            _($form.serializeArray()).each(function (nvp) {
+            _($form.serializeArray().filter(function(k) { return $.trim(k.value) != ""; })).each(function (nvp) {
                 if(formData[nvp.name]) {
                     if(!$.isArray(formData[nvp.name])) {
                         var firstItem = formData[nvp.name];

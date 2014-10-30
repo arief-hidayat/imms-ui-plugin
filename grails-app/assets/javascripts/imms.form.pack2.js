@@ -68,7 +68,7 @@
             var $form = form ? $(form) : this.$("form:first"),
                 formData = {}
                 ;
-            _($form.serializeArray()).each(function (nvp) {
+            _($form.serializeArray().filter(function(k) { return $.trim(k.value) != ""; })).each(function (nvp) {
                 formData[nvp.name] = nvp.value;
             });
             if(!formData.action) {
