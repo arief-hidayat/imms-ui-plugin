@@ -189,8 +189,10 @@
             var $select2Simples = parentEl == undefined ? this.$(".select2-simple") : this.$(parentEl + " .select2-simple");
             _.each($select2Simples, function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
-                var $select2 = $(mmEl).select2();
-                if(readOnly) {
+                var $mmEl = $(mmEl);
+                var isReadOnly = readOnly || ($mmEl.attr("readonly"));
+                var $select2 = $mmEl.select2();
+                if(isReadOnly) {
                     $select2.select2("readonly", true);
                 }
                 this.select2Els.push(mmEl);
@@ -199,6 +201,7 @@
             _.each($select2Remotes, function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id; // so many-to-many element must have ID
                 var $mmEl = $(mmEl);
+                var isReadOnly = readOnly || ($mmEl.attr("readonly")) c|| $mmEl.data("readonly");
                 var domainId = $mmEl.data("id"), domainName = $mmEl.data("from"), initUrl = $mmEl.data("initurl"), dataType = $mmEl.data("datatype") || "json";
                 var formatResult = App.template.select2.formatResult[$mmEl.data("resulttmpl") || domainName] || function(state) { return state.text; };
                 var formatSelection = App.template.select2.formatSelection[$mmEl.data("selectiontmpl")] || formatResult;
@@ -240,7 +243,7 @@
                     App.logDebug("load initial data");
                     $.ajax(initUrl, {data : {id : domainId}, dataType: dataType}).done(renderDataCallback);
                 }
-                if(readOnly || $mmEl.data("readonly")) {
+                if(isReadOnly) {
                     App.logDebug("make select2 readonly ");
                     $select2.select2("readonly", true);
                 }

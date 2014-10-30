@@ -107,8 +107,10 @@
             var $select2Simples = parentEl == undefined ? this.$(".select2-simple") : this.$(parentEl + " .select2-simple");
             _.each($select2Simples, function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id;
-                var $select2 = $(mmEl).select2();
-                if(readOnly) {
+                var $mmEl = $(mmEl);
+                var isReadOnly = readOnly || ($mmEl.attr("readonly"));
+                var $select2 = $mmEl.select2();
+                if(isReadOnly) {
                     $select2.select2("readonly", true);
                 }
                 this.select2Els.push(mmEl);
@@ -117,6 +119,7 @@
             _.each($select2Remotes, function(elem){
                 var mmEl = this.$el.selector + " #" + elem.id;
                 var $mmEl = $(mmEl);
+                var isReadOnly = readOnly || ($mmEl.attr("readonly")) || $mmEl.data("readonly");
                 var domainId = $mmEl.data("id"), domainName = $mmEl.data("from"), initUrl = $mmEl.data("initurl"), dataType = $mmEl.data("datatype") || "json";
                 var formatResult = App.template.select2.formatResult[$mmEl.data("resulttmpl") || domainName] || function(state) { return state.text; };
                 var formatSelection = App.template.select2.formatSelection[$mmEl.data("selectiontmpl")] || formatResult;
@@ -157,7 +160,7 @@
                     $.ajax(initUrl, {data : {id : domainId}, dataType: dataType}).done(renderDataCallback);
                 }
                 var $select2 = $mmEl.select2(select2Opts);
-                if(readOnly) $select2.select2("readonly", true);
+                if(isReadOnly) $select2.select2("readonly", true);
                 this.select2Els.push(mmEl);
             }, this);
         }
