@@ -65,15 +65,19 @@
             return false;
         },
         serializeForm : function(form) {
-            var $form = form ? $(form) : this.$("form:first"),
-                formData = {}
-                ;
-            _($form.serializeArray().filter(function(k) { return $.trim(k.value) != ""; })).each(function (nvp) {
-                formData[nvp.name] = nvp.value;
-            });
+            var $form = form ? $(form) : this.$("form:first");
+            var formData = this.getFormDataWithFilter($form, function(k) { return $.trim(k.value) != ""; });
+
             if(!formData.action) {
                 formData.action = $form.attr('action');
             }
+            return formData;
+        },
+        getFormDataWithFilter : function($form, filterCallback) {
+            var formData = {};
+            _($form.serializeArray().filter(filterCallback)).each(function (nvp) {
+                formData[nvp.name] = nvp.value;
+            });
             return formData;
         },
         initialize: function(opt) {
