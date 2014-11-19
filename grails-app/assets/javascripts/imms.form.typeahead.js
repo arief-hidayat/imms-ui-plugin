@@ -16,7 +16,7 @@
         events : {
             "change" : "onSelect"
         },
-        reset : function() { //TODO: test
+        reset : function() {
             App.logDebug("reset value on " + this.key);
             this.$el.removeData("selected-value");
             this.$el.val('').change();

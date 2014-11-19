@@ -19,6 +19,7 @@ App.css = App.css || {
 };
 
 App.view = App.view || {};
+App.util = App.util || {};
 
 
 App.datakey = App.datakey || {
